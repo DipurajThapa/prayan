@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function useIsDesktop() {
   const query = "(min-width: 1024px)";
@@ -12,7 +12,7 @@ function useIsDesktop() {
   return match;
 }
 import { Link } from "react-router-dom";
-import { ArrowRight, Compass, Handshake, MessageSquareText, ListChecks, MessagesSquare, ClipboardList, UserRoundCheck, ShieldCheck } from "lucide-react";
+import { ArrowRight, Pause, Play, Compass, Handshake, MessageSquareText, ListChecks, MessagesSquare, ClipboardList, UserRoundCheck, ShieldCheck } from "lucide-react";
 import { api } from "@/lib/api";
 import { CONTACT, SITE_URL } from "@/lib/site";
 import { media } from "@/lib/media";
@@ -52,6 +52,28 @@ export default function Home() {
   );
 }
 
+function HeroVideo() {
+  const ref = useRef(null);
+  const [playing, setPlaying] = useState(true);
+  const [reduced] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const v = media("hero-dubai-mansion-skyline-video");
+  if (reduced) return null;
+  const toggle = () => {
+    if (!ref.current) return;
+    if (ref.current.paused) { ref.current.play(); setPlaying(true); } else { ref.current.pause(); setPlaying(false); }
+  };
+  return (
+    <>
+      <video ref={ref} src={v.src} poster={v.poster} autoPlay muted loop playsInline preload="metadata" aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover" data-testid="hero-video" />
+      <button type="button" onClick={toggle} aria-label={playing ? "Pause background video" : "Play background video"} data-testid="hero-video-toggle"
+        className="absolute bottom-6 left-6 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-midnight/40 text-white backdrop-blur-md transition-colors hover:bg-white hover:text-midnight">
+        {playing ? <Pause className="h-4 w-4" strokeWidth={1.75} /> : <Play className="h-4 w-4" strokeWidth={1.75} />}
+      </button>
+    </>
+  );
+}
+
 function Hero() {
   const { openChat } = useChat();
   const img = media("hero-dubai-villa-pool");
@@ -63,6 +85,7 @@ function Hero() {
           <source media="(max-width: 767px)" srcSet={img.mobile} />
           <img src={img.src} alt={img.alt} fetchpriority="high" width="2000" height="1333" className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
         </picture>
+        {desktop && <HeroVideo />}
         <div className="absolute inset-0 bg-gradient-to-r from-midnight/85 via-midnight/55 to-midnight/10" aria-hidden="true" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-midnight/50 to-transparent" aria-hidden="true" />
         <div className="container-x relative grid gap-10 pb-14 pt-16 lg:grid-cols-12 lg:items-center lg:py-20 lg:min-h-[calc(100vh-72px)]">
@@ -80,7 +103,7 @@ function Hero() {
               <BrandButton to="/properties" variant="accent" size="lg" data-testid="hero-explore-properties-btn">Explore Properties<ArrowRight className="h-4 w-4" strokeWidth={1.75} /></BrandButton>
               <BrandButton variant="light" size="lg" onClick={() => openChat()} data-testid="hero-ask-prayan-btn"><MessageSquareText className="h-4 w-4" strokeWidth={1.75} />Ask Prayan</BrandButton>
             </div>
-            <p className="mt-10 hidden text-xs text-white/60 lg:block">Photography is illustrative and does not show an available Prayan listing.</p>
+            <p className="mt-10 hidden text-xs text-white/60 lg:block">Photography and video are illustrative and do not show an available Prayan listing.</p>
           </div>
           {desktop && <div className="reveal lg:col-span-6 xl:col-span-5" style={{ animationDelay: "320ms" }}><HeroLeadForm /></div>}
         </div>

@@ -11,6 +11,8 @@ from core import client, db, hash_password, new_id, now
 from routes_admin import router as admin_router
 from routes_auth import router as auth_router
 from routes_public import router as public_router
+from routes_listings import admin as listings_admin, public as files_public
+from storage import init_storage
 from seed_data import SAMPLE_PROPERTIES
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -29,6 +31,7 @@ INDEXES: dict[str, list[IndexModel]] = {
     "chat_sessions": [IndexModel([("session_id", ASCENDING)], name="session_id", unique=True)],
     "subscribers": [IndexModel([("email", ASCENDING)], name="email", unique=True),
                     IndexModel([("token", ASCENDING)], name="token")],
+    "files": [IndexModel([("storage_path", ASCENDING)], name="storage_path", unique=True)],
 }
 
 
@@ -62,6 +65,8 @@ async def health():
 api.include_router(auth_router)
 api.include_router(public_router)
 api.include_router(admin_router)
+api.include_router(listings_admin)
+api.include_router(files_public)
 app.include_router(api)
 
 app.add_middleware(
@@ -76,6 +81,10 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     await seed()
+    try:
+        await asyncio.to_thread(init_storage)
+    except Exception as e:
+        logger.error("Storage init failed: %s", e)
     app.state.index_task = asyncio.create_task(ensure_indexes())
 
 

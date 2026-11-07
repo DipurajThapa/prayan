@@ -34,17 +34,17 @@ export default function PropertyDetail() {
   return (
     <>
       <Seo title={`${p.title}, ${p.location}`} path={`/properties/${p.slug}`} image={media(p.images[0]).src}
-        description={`Sample listing: ${p.bedrooms}-bedroom ${p.type.toLowerCase()} in ${p.location}, ${p.area_sqft.toLocaleString("en-US")} sq ft. View specifications and ask about this property.`} />
+        description={`${p.is_sample ? "Sample listing: " : ""}${p.bedrooms}-bedroom ${p.type.toLowerCase()} in ${p.location}, ${p.area_sqft.toLocaleString("en-US")} sq ft. View specifications and ask about this property.`} />
       <div className="container-x pt-8">
         <Link to="/properties" className="inline-flex items-center gap-1 text-sm font-semibold text-slateink hover:text-midnight" data-testid="property-back-link"><ChevronLeft className="h-4 w-4" strokeWidth={1.75} />All properties</Link>
       </div>
-      <Gallery images={p.images} title={p.title} />
+      <Gallery images={p.images} title={p.title} sample={p.is_sample} />
       <div className="container-x grid gap-12 pb-24 pt-10 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <p className="flex items-center gap-1.5 text-sm font-medium text-sapphire"><MapPin className="h-4 w-4" strokeWidth={1.75} />{p.location}, Dubai · {p.type}</p>
           <h1 className="mt-3 font-display text-4xl font-extrabold tracking-tight text-midnight sm:text-5xl" data-testid="property-title">{p.title}</h1>
           <PropertySpecs p={p} className="mt-6 text-base" />
-          <StatusMessage type="info" className="mt-8" testId="property-sample-notice">This is a sample listing. The price, specifications and photography are illustrative and do not represent an available property.</StatusMessage>
+          {p.is_sample && <StatusMessage type="info" className="mt-8" testId="property-sample-notice">This is a sample listing. The price, specifications and photography are illustrative and do not represent an available property.</StatusMessage>}
           <Section title="Overview"><p className="text-base leading-relaxed text-slateink">{p.description}</p></Section>
           <Section title="Specifications"><SpecGrid p={p} /></Section>
           <Section title="Amenities"><Checklist items={p.amenities} /></Section>
@@ -53,9 +53,9 @@ export default function PropertyDetail() {
         <aside className="lg:col-span-5">
           <div className="space-y-5 lg:sticky lg:top-24">
             <div className="card-soft p-6" data-testid="property-price-card">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slateink">Sample price</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slateink">{p.is_sample ? "Sample price" : "Asking price"}</p>
               <p className="mt-1 font-display text-3xl font-extrabold text-midnight" data-testid="property-detail-price">{formatAED(p.price_aed)}</p>
-              <p className="mt-2 flex items-center gap-1.5 text-sm text-slateink"><Info className="h-4 w-4" strokeWidth={1.75} />Availability: not verified (sample data)</p>
+              <p className="mt-2 flex items-center gap-1.5 text-sm text-slateink"><Info className="h-4 w-4" strokeWidth={1.75} />{p.is_sample ? "Availability: not verified (sample data)" : "Availability confirmed by the team on enquiry"}</p>
               <BrandButton variant="secondary" className="mt-5 w-full" onClick={() => openChat({ propertySlug: p.slug, prompt: `I have a question about the ${p.title} in ${p.location}.` })} data-testid="property-ask-prayan-btn">
                 <MessageSquareText className="h-4 w-4" strokeWidth={1.75} />Ask Prayan About This Property
               </BrandButton>
@@ -72,18 +72,18 @@ export default function PropertyDetail() {
   );
 }
 
-function Gallery({ images, title }) {
+function Gallery({ images, title, sample }) {
   const [active, setActive] = useState(0);
   const main = media(images[active]);
   return (
     <section className="container-x mt-6" aria-label={`${title} photo gallery`}>
       <div className="relative overflow-hidden rounded-[24px]">
         <img src={main.src} alt={main.alt} className="aspect-[4/3] w-full object-cover sm:aspect-[16/8]" data-testid="gallery-main-image" />
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2 pr-4"><SampleBadge /><SampleBadge label="Illustrative photos" /></div>
+        {sample && <div className="absolute left-4 top-4 flex flex-wrap gap-2 pr-4"><SampleBadge /><SampleBadge label="Illustrative photos" /></div>}
       </div>
       <div className="mt-3 flex gap-3 overflow-x-auto pb-1">
         {images.map((k, i) => (
-          <button key={k} onClick={() => setActive(i)} aria-label={`Show photo ${i + 1}`} aria-current={i === active} data-testid={`gallery-thumb-${i}`}
+          <button key={typeof k === "string" ? k : k.path} onClick={() => setActive(i)} aria-label={`Show photo ${i + 1}`} aria-current={i === active} data-testid={`gallery-thumb-${i}`}
             className={cn("h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition-[border-color,opacity] sm:h-24 sm:w-36", i === active ? "border-sapphire" : "border-transparent opacity-70 hover:opacity-100")}>
             <img src={media(k).src} alt="" loading="lazy" className="h-full w-full object-cover" />
           </button>

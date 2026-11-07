@@ -180,7 +180,7 @@ function DoneStep({ result, contact, onReset }) {
         <p className="mt-2 text-sm leading-relaxed text-charcoal" data-testid="hero-confirmation-summary">{result?.summary}</p>
       </div>
       <p className="text-sm text-slateink" data-testid="hero-confirmation-matches">
-        {n > 0 ? <>{n} sample listing{n > 1 ? "s" : ""} on this site match{n === 1 ? "es" : ""} your location and budget. These are demonstration listings, not available properties. </>
+        {n > 0 ? <>{n} listing{n > 1 ? "s" : ""} on this site match{n === 1 ? "es" : ""} your location and budget.{result.matches.some((m) => m.is_sample) && " Listings marked as samples are demonstrations, not available properties."} </>
           : <>No listings on this site currently match your location and budget. The team will follow up with suitable next steps. </>}
         <Link to="/properties" className="font-semibold text-sapphire underline underline-offset-2" data-testid="hero-confirmation-explore-link">Explore Properties</Link>
       </p>

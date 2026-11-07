@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
 import { CalendarCheck2, Clock3, Copy, Inbox, Loader2, LogOut, Mail, MessageCircle, Phone, RefreshCw, Save, Sparkles, Users } from "lucide-react";
 import { toast } from "sonner";
 import { api, formatApiError } from "@/lib/api";
@@ -8,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Seo } from "@/components/brand/Seo";
 import { BrandButton } from "@/components/brand/BrandButton";
 import { StatusMessage } from "@/components/brand/StatusMessage";
+import { OwnerGate, OwnerNav } from "@/components/OwnerShell";
 import { cn } from "@/lib/utils";
 
 const STATUS_LABEL = { new: "New", awaiting_follow_up: "Awaiting follow-up", contacted: "Contacted", closed: "Closed" };
@@ -17,12 +17,7 @@ const SOURCE = { hero: "Home enquiry form", contact: "Contact page", property: "
 const fmtDate = (s) => new Date(s).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 export default function Dashboard() {
-  const { user, checkAuth } = useAuth();
-  const location = useLocation();
-  useEffect(() => { if (user === null && !location.state?.user) checkAuth(); }, [user, checkAuth, location.state]);
-  if (user === false) return <Navigate to="/login" replace />;
-  if (!user && !location.state?.user) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-sapphire" /></div>;
-  return <Workspace owner={user || location.state.user} />;
+  return <OwnerGate>{(owner) => <Workspace owner={owner} />}</OwnerGate>;
 }
 
 function Workspace({ owner }) {
@@ -49,6 +44,7 @@ function Workspace({ owner }) {
   return (
     <div className="container-x py-10" data-testid="owner-dashboard">
       <Seo title="Owner dashboard" path="/dashboard" description="Prayan owner dashboard." noindex />
+      <OwnerNav />
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <p className="eyebrow mb-3">Owner workspace</p>

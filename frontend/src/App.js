@@ -11,6 +11,7 @@ import HowItWorks from "@/pages/HowItWorks";
 import Contact from "@/pages/Contact";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
+import ListingManager from "@/pages/ListingManager";
 import AuthCallback from "@/pages/AuthCallback";
 import Privacy, { Terms } from "@/pages/Legal";
 import Unsubscribe from "@/pages/Unsubscribe";
@@ -32,6 +33,7 @@ function AppRouter() {
         <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/listings" element={<ListingManager />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

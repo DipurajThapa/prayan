@@ -58,7 +58,7 @@ export default function Properties() {
         </div>
       </section>
       <section className="container-x py-12" aria-live="polite">
-        {items && !error && <p className="mb-6 text-sm text-slateink" data-testid="properties-result-count">{items.length} sample listing{items.length === 1 ? "" : "s"}</p>}
+        {items && !error && <p className="mb-6 text-sm text-slateink" data-testid="properties-result-count">{items.length} listing{items.length === 1 ? "" : "s"}</p>}
         {error && <StatusMessage type="error" testId="properties-error">We could not load listings right now. Please refresh the page.</StatusMessage>}
         {items === null && <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <div key={i} className="aspect-[3/4] animate-pulse rounded-2xl bg-line/60" />)}</div>}
         {items?.length === 0 && !error && (

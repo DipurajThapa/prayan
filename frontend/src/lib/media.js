@@ -4,6 +4,12 @@ const PEXELS = "Pexels Licence — free for commercial use, no attribution requi
 const u = (id) => `https://unsplash.com/photos/${id}`;
 
 export const MEDIA = {
+  "hero-dubai-mansion-skyline-video": {
+    src: "/media/hero-dubai-mansion-skyline.mp4", poster: "/media/hero-dubai-mansion-skyline-poster.jpg",
+    alt: "Villa garden and pool on the Palm Jumeirah with the Dubai Marina skyline across the water",
+    source: "https://www.pexels.com/video/luxury-mansion-with-dubai-skyline-view-31977028/",
+    licence: PEXELS, usage: "Home hero background video (desktop only, muted, 14-second loop)",
+  },
   "hero-dubai-villa-pool": {
     src: "/media/hero-dubai-villa-pool.jpg", mobile: "/media/hero-dubai-villa-pool-mobile.jpg",
     alt: "Modern white villa with palm trees and a long swimming pool beside a timber deck",
@@ -26,4 +32,7 @@ export const MEDIA = {
   "interior-arched": { src: "/media/interior-arched.jpg", alt: "Open-plan living and dining space with arched windows", source: u("photo-1688646953306-5ec93eab8c06"), licence: UNSPLASH, usage: "Sample listing galleries" },
 };
 
-export const media = (key) => MEDIA[key] || MEDIA["hero-dubai-villa-pool"];
+export const media = (key) => {
+  if (key && typeof key === "object") return { src: `${process.env.REACT_APP_BACKEND_URL}/api/files/${key.path}`, alt: key.alt };
+  return MEDIA[key] || MEDIA["hero-dubai-villa-pool"];
+};

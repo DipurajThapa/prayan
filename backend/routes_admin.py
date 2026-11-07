@@ -81,7 +81,11 @@ async def generate_followup(enquiry_id: str):
                                      "property_title", "wants_viewing", "preferred_date", "message", "summary")
              if enq.get(k)}
     if enq.get("property_title"):
-        facts["listing_note"] = "The listing is sample data on a preview website."
+        prop = await db.properties.find_one({"title": enq["property_title"]}, {"_id": 0, "is_sample": 1})
+        if prop is None or prop.get("is_sample"):
+            facts["listing_note"] = "The listing is sample data on a preview website."
+        else:
+            facts["listing_note"] = "This is a real listing, but availability is not confirmed."
     try:
         draft = await ai.complete(FOLLOWUP_SYSTEM, json.dumps(facts))
     except Exception as e:

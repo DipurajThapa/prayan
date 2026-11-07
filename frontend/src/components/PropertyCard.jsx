@@ -26,7 +26,7 @@ export function PropertyCard({ p, index = 0 }) {
         <img src={img.src} alt={img.alt} loading="lazy" decoding="async" width="1400" height="1050"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
         <div className="absolute left-4 top-4 flex gap-2">
-          <SampleBadge />
+          {p.is_sample && <SampleBadge />}
           <span className="rounded-full bg-midnight/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur">{p.completion}</span>
         </div>
       </Link>
@@ -36,7 +36,7 @@ export function PropertyCard({ p, index = 0 }) {
         <PropertySpecs p={p} className="mt-4" />
         <div className="mt-6 flex items-end justify-between border-t border-line pt-5">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slateink">Sample price</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slateink">{p.is_sample ? "Sample price" : "Price"}</p>
             <p className="font-display text-lg font-bold text-midnight" data-testid={`property-price-${p.slug}`}>{formatAED(p.price_aed)}</p>
           </div>
         </div>

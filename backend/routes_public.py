@@ -48,7 +48,7 @@ def rate_limit(request: Request):
 async def list_properties(location: Optional[str] = None, type: Optional[str] = None,
                           bedrooms: Optional[int] = Query(None, ge=0, le=10),
                           max_price: Optional[int] = Query(None, ge=0), featured: Optional[bool] = None):
-    q: dict = {}
+    q: dict = {"published": {"$ne": False}}
     if location:
         q["location"] = location
     if type:
@@ -64,7 +64,7 @@ async def list_properties(location: Optional[str] = None, type: Optional[str] = 
 
 @router.get("/properties/{slug}")
 async def get_property(slug: str):
-    prop = await db.properties.find_one({"slug": slug}, PUBLIC_FIELDS)
+    prop = await db.properties.find_one({"slug": slug, "published": {"$ne": False}}, PUBLIC_FIELDS)
     if not prop:
         raise HTTPException(status_code=404, detail="Property not found")
     return prop
@@ -79,7 +79,8 @@ async def matching_properties(location: Optional[str], budget: Optional[str]) ->
         q["price_aed"] = {"$gte": lo, "$lte": hi}
     if not q:
         return []
-    return await db.properties.find(q, {"_id": 0, "slug": 1, "title": 1, "location": 1}).to_list(20)
+    q["published"] = {"$ne": False}
+    return await db.properties.find(q, {"_id": 0, "slug": 1, "title": 1, "location": 1, "is_sample": 1}).to_list(20)
 
 
 # ---------- Hero lead: clarifying question ----------
@@ -217,10 +218,11 @@ async def create_enquiry(body: EnquiryIn):
     data["name"] = data["name"].strip()
     data["wants_viewing"] = body.source == "viewing"
     if body.property_slug:
-        prop = await db.properties.find_one({"slug": body.property_slug}, {"_id": 0, "title": 1, "location": 1})
+        prop = await db.properties.find_one({"slug": body.property_slug}, {"_id": 0, "title": 1, "location": 1, "is_sample": 1})
         if not prop:
             raise HTTPException(status_code=404, detail="Property not found")
         data["property_title"] = prop["title"]
+        data["property_is_sample"] = bool(prop.get("is_sample"))
         data["location"] = data.get("location") or prop["location"]
     data["consent_at"] = now_iso()
     saved = await save_enquiry(data)
@@ -236,7 +238,7 @@ class ChatIn(BaseModel):
 
 
 async def assistant_system(property_slug: Optional[str]) -> str:
-    props = await db.properties.find({}, {"_id": 0, "images": 0}).to_list(50)
+    props = await db.properties.find({"published": {"$ne": False}}, {"_id": 0, "images": 0, "created_at": 0, "updated_at": 0}).to_list(100)
     focus = f"\nThe visitor is currently viewing the listing with slug '{property_slug}'." if property_slug else ""
     return (
         "You are Prayan's property assistant for a Dubai real estate website. Scope: general Dubai property "
@@ -244,7 +246,8 @@ async def assistant_system(property_slug: Optional[str]) -> str:
         "requirements, viewing requests, summarising needs, and arranging a human follow-up.\n"
         "Rules:\n- Be concise: 1-3 short sentences, warm and professional International English.\n"
         "- Ask at most ONE question per reply. Never repeat a question already answered in this conversation.\n"
-        "- The listings below are SAMPLE DATA for demonstration. Whenever you mention one, say it is a sample listing. "
+        "- Listings with is_sample=true are SAMPLE DATA for demonstration: whenever you mention one, say it is a sample listing. "
+        "Listings with is_sample=false are the owner's real listings, but availability still needs confirming by the team. "
         "Use only these facts; never invent prices, availability, service charges, yields, legal advice or bookings.\n"
         "- You cannot book viewings. For a viewing or human follow-up, say the Prayan team can confirm, and invite the "
         "visitor to share their details using the form. When it is the right moment to collect contact details "
@@ -253,7 +256,7 @@ async def assistant_system(property_slug: Optional[str]) -> str:
         "- Never ask for contact details in free text; the form collects them with consent.\n"
         "- For questions outside scope or unknown facts, say so plainly and offer to pass the question to the team.\n"
         "- Do not use markdown headings or tables. Plain text only.\n"
-        f"SAMPLE LISTINGS (JSON): {json.dumps(props)}{focus}"
+        f"LISTINGS (JSON): {json.dumps(props)}{focus}"
     )
 
 
