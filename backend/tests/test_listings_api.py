@@ -71,11 +71,20 @@ class TestListings:
         assert all("_id" not in p for p in data)
 
     def test_upload_and_serve(self, own, uploaded):
-        assert uploaded.startswith("prayan/listings/") and uploaded.endswith(".jpg")
+        # uploads are re-encoded to WebP (EXIF/GPS stripped) and served with a long immutable cache
+        assert uploaded.startswith("prayan/listings/") and uploaded.endswith(".webp")
         r = requests.get(f"{BASE_URL}/api/files/{uploaded}")
         assert r.status_code == 200
-        assert r.headers["content-type"].startswith("image/jpeg")
-        assert r.content[:2] == b"\xff\xd8"
+        assert r.headers["content-type"].startswith("image/webp")
+        assert r.content[:4] == b"RIFF" and r.content[8:12] == b"WEBP"
+        assert "immutable" in r.headers["cache-control"]
+
+    def test_upload_returns_thumb(self, own):
+        r = own.post(f"{BASE_URL}/api/admin/uploads", files={"file": ("t.jpg", jpg_bytes(), "image/jpeg")})
+        assert r.status_code == 201, r.text
+        thumb = r.json()["thumb"]
+        assert thumb.endswith("-800.webp")
+        assert requests.get(f"{BASE_URL}/api/files/{thumb}").status_code == 200
 
     def test_unknown_file_404(self):
         assert requests.get(f"{BASE_URL}/api/files/prayan/listings/nope.jpg").status_code == 404

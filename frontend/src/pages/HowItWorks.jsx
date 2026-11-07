@@ -1,5 +1,5 @@
 import { CircleCheck, CircleX } from "lucide-react";
-import { media } from "@/lib/media";
+import { Img } from "@/components/brand/Img";
 import { Seo } from "@/components/brand/Seo";
 import { BrandButton } from "@/components/brand/BrandButton";
 import { FAQS, FaqAccordion, faqJsonLd } from "@/components/FaqAccordion";
@@ -28,7 +28,7 @@ export default function HowItWorks() {
         <p className="lead lg:col-span-5">Prayan keeps the process simple. You explore at your own pace, ask what you need to know and only share your details when you are ready.</p>
       </section>
       <section className="container-x">
-        <img src={media("house-glass-walls").src} alt={media("house-glass-walls").alt} loading="lazy" className="aspect-[16/7] w-full rounded-[24px] object-cover" />
+        <Img image="house-glass-walls" sizes="(min-width: 1280px) 1232px, 100vw" loading="lazy" decoding="async" className="aspect-[16/7] w-full rounded-[24px] object-cover" />
       </section>
       <section className="container-x py-20 lg:py-28">
         <ol className="grid gap-px overflow-hidden rounded-[24px] border border-line bg-line md:grid-cols-2">

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight, BedDouble, Bath, MapPin, Ruler } from "lucide-react";
 import { formatAED } from "@/lib/site";
 import { media } from "@/lib/media";
+import { Img } from "@/components/brand/Img";
 import { SampleBadge } from "@/components/brand/Seo";
 import { BrandButton } from "@/components/brand/BrandButton";
 
@@ -23,8 +24,8 @@ export function PropertyCard({ p, index = 0 }) {
   return (
     <article className="group reveal card-soft flex flex-col overflow-hidden" style={{ animationDelay: `${index * 80}ms` }} data-testid={`property-card-${p.slug}`}>
       <Link to={`/properties/${p.slug}`} className="relative block aspect-[4/3] overflow-hidden" aria-label={`View details for ${p.title}`}>
-        <img src={img.src} alt={img.alt} loading="lazy" decoding="async" width="1400" height="1050"
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+        <Img image={img} thumb sizes="(min-width: 1280px) 400px, (min-width: 1024px) 31vw, (min-width: 768px) 46vw, 100vw"
+          loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
         <div className="absolute left-4 top-4 flex gap-2">
           {p.is_sample && <SampleBadge />}
           <span className="rounded-full bg-midnight/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur">{p.completion}</span>

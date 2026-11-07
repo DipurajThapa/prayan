@@ -1,3 +1,4 @@
+import asyncio
 import io
 import logging
 import re
@@ -5,7 +6,7 @@ import uuid
 from typing import List, Literal, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
-from PIL import Image
+from PIL import Image, ImageOps
 from pydantic import BaseModel, Field, field_validator
 
 from core import db, get_current_owner, now_iso
@@ -19,10 +20,12 @@ LISTING_LOCATIONS = ["Downtown Dubai", "Dubai Marina", "Palm Jumeirah", "Dubai H
                      "Jumeirah Village Circle"]
 ALLOWED_TYPES = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}
 MAX_BYTES = 8 * 1024 * 1024
+MAIN_EDGE, THUMB_WIDTH = 2000, 800  # longest edge of the stored photo; width of the card/thumbnail copy
 
 
 class ListingImage(BaseModel):
     path: str = Field(min_length=5, max_length=200)
+    thumb: Optional[str] = Field(default=None, min_length=5, max_length=200)
     alt: str = Field(min_length=3, max_length=200)
 
 
@@ -55,6 +58,23 @@ def slugify(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:80]
 
 
+def optimise_photo(data: bytes) -> tuple[bytes, bytes]:
+    """Return (main, thumb) WebP bytes. Phone photos arrive at 3-8 MB; this stores at most 2000px on the
+    long edge (~200-400 KB) plus an 800px-wide copy for cards. Applies the EXIF rotation, then drops all
+    metadata, including any GPS location the camera recorded."""
+    with Image.open(io.BytesIO(data)) as src:
+        im = ImageOps.exif_transpose(src)
+        im = im.convert("RGBA" if im.mode in ("RGBA", "LA", "PA") or "transparency" in im.info else "RGB")
+    im.thumbnail((MAIN_EDGE, MAIN_EDGE), Image.LANCZOS)
+    out = []
+    for img, quality in ((im, 80), (im.resize((THUMB_WIDTH, round(im.height * THUMB_WIDTH / im.width)), Image.LANCZOS)
+                                    if im.width > THUMB_WIDTH else im, 75)):
+        b = io.BytesIO()
+        img.save(b, "WEBP", quality=quality, method=4)
+        out.append(b.getvalue())
+    return out[0], out[1]
+
+
 async def unique_slug(base: str) -> str:
     slug, n = base, 2
     while await db.properties.find_one({"slug": slug}, {"_id": 1}):
@@ -70,7 +90,7 @@ def to_doc(body: ListingIn) -> dict:
 
 
 def _paths(images) -> set:
-    return {i["path"] for i in images or [] if isinstance(i, dict)}
+    return {p for i in images or [] if isinstance(i, dict) for p in (i.get("path"), i.get("thumb")) if p}
 
 
 async def release_files(old_images, new_images=()):
@@ -132,16 +152,25 @@ async def upload_photo(file: UploadFile = File(...), owner: dict = Depends(get_c
         raise HTTPException(status_code=415, detail="This file is not a valid image.")
     if real not in ("jpeg", "png", "webp"):
         raise HTTPException(status_code=415, detail="Please upload a JPG, PNG or WebP image.")
-    path = f"{APP_NAME}/listings/{uuid.uuid4().hex}.{ext}"
     try:
-        result = await put_object(path, data, file.content_type)
-    except Exception as e:
-        logger.error("upload failed: %s", e)
-        raise HTTPException(status_code=503, detail="The photo could not be uploaded. Please try again.")
-    await db.files.insert_one({"id": uuid.uuid4().hex, "storage_path": result["path"], "original_filename": file.filename,
-                               "content_type": file.content_type, "size": result.get("size", len(data)),
-                               "uploaded_by": owner["user_id"], "is_deleted": False, "created_at": now_iso()})
-    return {"path": result["path"]}
+        main, thumb = await asyncio.to_thread(optimise_photo, data)
+    except Exception:
+        raise HTTPException(status_code=415, detail="This file is not a valid image.")
+    name = uuid.uuid4().hex
+    stored = {}
+    for kind, path, body in (("path", f"{APP_NAME}/listings/{name}.webp", main),
+                             ("thumb", f"{APP_NAME}/listings/{name}-{THUMB_WIDTH}.webp", thumb)):
+        try:
+            result = await put_object(path, body, "image/webp")
+        except Exception as e:
+            logger.error("upload failed: %s", e)
+            raise HTTPException(status_code=503, detail="The photo could not be uploaded. Please try again.")
+        await db.files.insert_one({"id": uuid.uuid4().hex, "storage_path": result["path"], "original_filename": file.filename,
+                                   "content_type": "image/webp", "size": result.get("size", len(body)),
+                                   "original_size": len(data), "variant": kind,
+                                   "uploaded_by": owner["user_id"], "is_deleted": False, "created_at": now_iso()})
+        stored[kind] = result["path"]
+    return stored
 
 
 @public.get("/files/{path:path}")
@@ -155,4 +184,5 @@ async def serve_file(path: str):
         logger.error("file fetch failed: %s", e)
         raise HTTPException(status_code=503, detail="File temporarily unavailable")
     return Response(content=data, media_type=record.get("content_type") or ctype,
-                    headers={"Cache-Control": "public, max-age=86400"})
+                    # Every upload gets a new random name and is never changed in place, so it can be cached for a year.
+                    headers={"Cache-Control": "public, max-age=31536000, immutable"})

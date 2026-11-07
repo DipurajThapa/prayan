@@ -1,0 +1,117 @@
+{
+  "dubai-skyline": {
+    "w": 1400,
+    "h": 933,
+    "avif": "/static/media/dubai-skyline-480.f6ce7fcb83.avif 480w, /static/media/dubai-skyline-800.212e9df1c9.avif 800w, /static/media/dubai-skyline-1200.70f30f4755.avif 1200w",
+    "webp": "/static/media/dubai-skyline-480.17b92af487.webp 480w, /static/media/dubai-skyline-800.be18bd55b3.webp 800w, /static/media/dubai-skyline-1200.98958cf415.webp 1200w",
+    "src": "/static/media/dubai-skyline-800.eca03d64e6.jpg"
+  },
+  "dubai-towers-canal": {
+    "w": 1400,
+    "h": 1750,
+    "avif": "/static/media/dubai-towers-canal-480.435f4e423e.avif 480w, /static/media/dubai-towers-canal-800.4911e94bc6.avif 800w, /static/media/dubai-towers-canal-1200.7b572007a3.avif 1200w",
+    "webp": "/static/media/dubai-towers-canal-480.32d93cff8d.webp 480w, /static/media/dubai-towers-canal-800.1906264309.webp 800w, /static/media/dubai-towers-canal-1200.12b668809e.webp 1200w",
+    "src": "/static/media/dubai-towers-canal-800.6f859da490.jpg"
+  },
+  "dubai-towers-park": {
+    "w": 1400,
+    "h": 1750,
+    "avif": "/static/media/dubai-towers-park-480.0450f999bd.avif 480w, /static/media/dubai-towers-park-800.467ae74618.avif 800w, /static/media/dubai-towers-park-1200.93ff8b5fd6.avif 1200w",
+    "webp": "/static/media/dubai-towers-park-480.5548073397.webp 480w, /static/media/dubai-towers-park-800.0e099c37ba.webp 800w, /static/media/dubai-towers-park-1200.b60c051230.webp 1200w",
+    "src": "/static/media/dubai-towers-park-800.70995a36af.jpg"
+  },
+  "dubai-towers-sunlight": {
+    "w": 1400,
+    "h": 787,
+    "avif": "/static/media/dubai-towers-sunlight-480.dec350db6a.avif 480w, /static/media/dubai-towers-sunlight-800.58eff666d3.avif 800w, /static/media/dubai-towers-sunlight-1200.7595018e1d.avif 1200w",
+    "webp": "/static/media/dubai-towers-sunlight-480.dc392edab9.webp 480w, /static/media/dubai-towers-sunlight-800.5b247bffbe.webp 800w, /static/media/dubai-towers-sunlight-1200.09fef2b35e.webp 1200w",
+    "src": "/static/media/dubai-towers-sunlight-800.83c4168f0a.jpg"
+  },
+  "hero-dubai-villa-pool-mobile": {
+    "w": 900,
+    "h": 599,
+    "avif": "/static/media/hero-dubai-villa-pool-mobile-480.b3fa68e264.avif 480w, /static/media/hero-dubai-villa-pool-mobile-900.6836c51412.avif 900w",
+    "webp": "/static/media/hero-dubai-villa-pool-mobile-480.e17fd63378.webp 480w, /static/media/hero-dubai-villa-pool-mobile-900.38cce5f11b.webp 900w",
+    "src": "/static/media/hero-dubai-villa-pool-mobile-900.b1f79bdea9.jpg"
+  },
+  "hero-dubai-villa-pool": {
+    "w": 2000,
+    "h": 1333,
+    "avif": "/static/media/hero-dubai-villa-pool-1200.d2538bf576.avif 1200w, /static/media/hero-dubai-villa-pool-1600.c14189deaa.avif 1600w, /static/media/hero-dubai-villa-pool-2000.3685a09365.avif 2000w",
+    "webp": "/static/media/hero-dubai-villa-pool-1200.067be6da98.webp 1200w, /static/media/hero-dubai-villa-pool-1600.757d018229.webp 1600w, /static/media/hero-dubai-villa-pool-2000.b7fda21f64.webp 2000w",
+    "src": "/static/media/hero-dubai-villa-pool-1600.3d7a138e62.jpg"
+  },
+  "house-glass-walls": {
+    "w": 1400,
+    "h": 933,
+    "avif": "/static/media/house-glass-walls-480.ce2bdbe097.avif 480w, /static/media/house-glass-walls-800.a04c329fff.avif 800w, /static/media/house-glass-walls-1200.e7088f1d42.avif 1200w",
+    "webp": "/static/media/house-glass-walls-480.adec330092.webp 480w, /static/media/house-glass-walls-800.1b59bdb2b4.webp 800w, /static/media/house-glass-walls-1200.abedf2cb89.webp 1200w",
+    "src": "/static/media/house-glass-walls-800.69627438bb.jpg"
+  },
+  "house-two-storey": {
+    "w": 1400,
+    "h": 1400,
+    "avif": "/static/media/house-two-storey-480.16aeb04282.avif 480w, /static/media/house-two-storey-800.70ad088661.avif 800w, /static/media/house-two-storey-1200.7e71b7209a.avif 1200w",
+    "webp": "/static/media/house-two-storey-480.fb1e6b4773.webp 480w, /static/media/house-two-storey-800.19cf4f7996.webp 800w, /static/media/house-two-storey-1200.1fed0a58b6.webp 1200w",
+    "src": "/static/media/house-two-storey-800.2e7908d2aa.jpg"
+  },
+  "house-white-cube": {
+    "w": 1400,
+    "h": 1750,
+    "avif": "/static/media/house-white-cube-480.3570393a14.avif 480w, /static/media/house-white-cube-800.380bf98b96.avif 800w, /static/media/house-white-cube-1200.1486ddea42.avif 1200w",
+    "webp": "/static/media/house-white-cube-480.a3edad3853.webp 480w, /static/media/house-white-cube-800.45a39d92f2.webp 800w, /static/media/house-white-cube-1200.295ac6377c.webp 1200w",
+    "src": "/static/media/house-white-cube-800.6bde88edbb.jpg"
+  },
+  "interior-arched": {
+    "w": 1400,
+    "h": 1047,
+    "avif": "/static/media/interior-arched-480.a641ac6e4e.avif 480w, /static/media/interior-arched-800.161f165e94.avif 800w, /static/media/interior-arched-1200.c84c30cffc.avif 1200w",
+    "webp": "/static/media/interior-arched-480.127e3a4a16.webp 480w, /static/media/interior-arched-800.36ca49eb6e.webp 800w, /static/media/interior-arched-1200.c331bc2ac4.webp 1200w",
+    "src": "/static/media/interior-arched-800.d50790534b.jpg"
+  },
+  "interior-chaise": {
+    "w": 1400,
+    "h": 1750,
+    "avif": "/static/media/interior-chaise-480.f789ef6259.avif 480w, /static/media/interior-chaise-800.27f333cb77.avif 800w, /static/media/interior-chaise-1200.715fec52ec.avif 1200w",
+    "webp": "/static/media/interior-chaise-480.01afa20cc9.webp 480w, /static/media/interior-chaise-800.864e0487e6.webp 800w, /static/media/interior-chaise-1200.9da27a53ad.webp 1200w",
+    "src": "/static/media/interior-chaise-800.536d48b710.jpg"
+  },
+  "interior-living-rug": {
+    "w": 1400,
+    "h": 933,
+    "avif": "/static/media/interior-living-rug-480.2776e7e38a.avif 480w, /static/media/interior-living-rug-800.a10eb81917.avif 800w, /static/media/interior-living-rug-1200.0a134cc2df.avif 1200w",
+    "webp": "/static/media/interior-living-rug-480.2267e19a3c.webp 480w, /static/media/interior-living-rug-800.e4954d8c6a.webp 800w, /static/media/interior-living-rug-1200.0690362135.webp 1200w",
+    "src": "/static/media/interior-living-rug-800.ad49c6c6f4.jpg"
+  },
+  "interior-living-windows": {
+    "w": 1400,
+    "h": 933,
+    "avif": "/static/media/interior-living-windows-480.f9399e8e02.avif 480w, /static/media/interior-living-windows-800.52e80070b0.avif 800w, /static/media/interior-living-windows-1200.aa15a41521.avif 1200w",
+    "webp": "/static/media/interior-living-windows-480.2daf4dfd8c.webp 480w, /static/media/interior-living-windows-800.47a1f3c58c.webp 800w, /static/media/interior-living-windows-1200.2e10c721e9.webp 1200w",
+    "src": "/static/media/interior-living-windows-800.9e7aa9727d.jpg"
+  },
+  "villa-blue-sky": {
+    "w": 1400,
+    "h": 928,
+    "avif": "/static/media/villa-blue-sky-480.6f44a7d2e6.avif 480w, /static/media/villa-blue-sky-800.6592bb317c.avif 800w, /static/media/villa-blue-sky-1200.9718a5ef18.avif 1200w",
+    "webp": "/static/media/villa-blue-sky-480.df8baa9b86.webp 480w, /static/media/villa-blue-sky-800.4a9aea059a.webp 800w, /static/media/villa-blue-sky-1200.3ebd39d0a5.webp 1200w",
+    "src": "/static/media/villa-blue-sky-800.9c6d2c333d.jpg"
+  },
+  "villa-glass-pool": {
+    "w": 1400,
+    "h": 1750,
+    "avif": "/static/media/villa-glass-pool-480.3e5c303267.avif 480w, /static/media/villa-glass-pool-800.dea9d18c83.avif 800w, /static/media/villa-glass-pool-1200.62ee1bead7.avif 1200w",
+    "webp": "/static/media/villa-glass-pool-480.64c911afc4.webp 480w, /static/media/villa-glass-pool-800.0954a41489.webp 800w, /static/media/villa-glass-pool-1200.47260abfa6.webp 1200w",
+    "src": "/static/media/villa-glass-pool-800.3937fdc94b.jpg"
+  },
+  "villa-white-pool": {
+    "w": 1400,
+    "h": 933,
+    "avif": "/static/media/villa-white-pool-480.bb52c69884.avif 480w, /static/media/villa-white-pool-800.c647fcee72.avif 800w, /static/media/villa-white-pool-1200.bd6c2d5f4b.avif 1200w",
+    "webp": "/static/media/villa-white-pool-480.6bcd80d01a.webp 480w, /static/media/villa-white-pool-800.96b94f7a55.webp 800w, /static/media/villa-white-pool-1200.a199d4c4e7.webp 1200w",
+    "src": "/static/media/villa-white-pool-800.d7a4ccd132.jpg"
+  },
+  "hero-dubai-mansion-skyline": {
+    "src": "/static/media/hero-dubai-mansion-skyline-1280.d6d26f4363.mp4"
+  }
+}
