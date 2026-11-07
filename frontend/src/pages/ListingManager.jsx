@@ -3,6 +3,7 @@ import { ExternalLink, ImageOff, Plus } from "lucide-react";
 import { api, formatApiError } from "@/lib/api";
 import { formatAED } from "@/lib/site";
 import { media } from "@/lib/media";
+import { Img } from "@/components/brand/Img";
 import { Seo } from "@/components/brand/Seo";
 import { BrandButton } from "@/components/brand/BrandButton";
 import { StatusMessage } from "@/components/brand/StatusMessage";
@@ -69,7 +70,7 @@ function ListingList({ items, active, onSelect }) {
             <button onClick={() => onSelect(p.slug)} data-testid={`listing-row-${p.slug}`}
               className={cn("flex min-w-0 flex-1 items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-soft", active === p.slug && "bg-sapphire/5")}>
               <span className="h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-soft">
-                {img ? <img src={img.src} alt="" className="h-full w-full object-cover" loading="lazy" /> : <ImageOff className="m-auto mt-4 h-5 w-5 text-slateink" strokeWidth={1.75} />}
+                {img ? <Img image={img} thumb alt="" sizes="80px" className="h-full w-full object-cover" loading="lazy" /> : <ImageOff className="m-auto mt-4 h-5 w-5 text-slateink" strokeWidth={1.75} />}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-display font-bold text-midnight">{p.title}</span>

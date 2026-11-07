@@ -1,4 +1,5 @@
 import "@/App.css";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
@@ -9,17 +10,26 @@ import Properties from "@/pages/Properties";
 import PropertyDetail from "@/pages/PropertyDetail";
 import HowItWorks from "@/pages/HowItWorks";
 import Contact from "@/pages/Contact";
-import Login from "@/pages/Login";
-import Dashboard from "@/pages/Dashboard";
-import ListingManager from "@/pages/ListingManager";
-import AuthCallback from "@/pages/AuthCallback";
-import Privacy, { Terms } from "@/pages/Legal";
-import Unsubscribe from "@/pages/Unsubscribe";
 import NotFound from "@/pages/NotFound";
+
+// Owner, legal and unsubscribe pages load on demand so visitors don't download them with the home page.
+const Login = lazy(() => import("@/pages/Login"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const ListingManager = lazy(() => import("@/pages/ListingManager"));
+const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
+const Privacy = lazy(() => import("@/pages/Legal"));
+const Terms = lazy(() => import("@/pages/Legal").then((m) => ({ default: m.Terms })));
+const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
+
+const page = (Page) => (
+  <Suspense fallback={<div className="min-h-[60vh]" aria-busy="true" />}>
+    <Page />
+  </Suspense>
+);
 
 function AppRouter() {
   const location = useLocation();
-  if (location.hash?.includes("session_id=")) return <AuthCallback />;
+  if (location.hash?.includes("session_id=")) return page(AuthCallback);
   return (
     <Routes>
       <Route element={<SiteLayout />}>
@@ -28,12 +38,12 @@ function AppRouter() {
         <Route path="/properties/:slug" element={<PropertyDetail />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/unsubscribe" element={<Unsubscribe />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/listings" element={<ListingManager />} />
+        <Route path="/privacy" element={page(Privacy)} />
+        <Route path="/terms" element={page(Terms)} />
+        <Route path="/unsubscribe" element={page(Unsubscribe)} />
+        <Route path="/login" element={page(Login)} />
+        <Route path="/dashboard" element={page(Dashboard)} />
+        <Route path="/dashboard/listings" element={page(ListingManager)} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

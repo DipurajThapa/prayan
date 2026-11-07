@@ -13,6 +13,12 @@ User choices: Claude Opus 5.5; owner login email/password AND Emergent Google (a
 ## Personas
 Property seekers (buyers/investors/explorers); Owner (reviews enquiries, drafts follow-ups).
 
+## Implemented (2026-11-07, media performance)
+- Originals live in frontend/media-src; `python3 frontend/scripts/optimize_media.py` writes content-hashed AVIF/WebP/JPEG sizes + re-encoded hero video to public/static/media (host caches /static/* for a year, immutable), media-manifest.json, the home-hero preload in index.html and media/social-preview.jpg. Re-run after changing any file in media-src.
+- `<Img>` (components/brand/Img.jsx) serves the right size/format; hero video loads after page load, skipped on Data Saver/slow connections; owner/legal routes lazy-loaded
+- Uploads: re-encoded to WebP ≤2000px + 800px thumb, EXIF/GPS stripped; /api/files cached 1 year immutable
+- Lighthouse (local build): mobile 69→92-95, LCP 4.9s→2.6-2.8s; home page weight mobile 1.1MB→0.44MB, desktop 6.1MB→2.8MB
+
 ## Implemented (2026-11-07, iteration 2)
 - Listing Manager at /dashboard/listings (owner only): create/edit/delete, publish/draft, featured, sample flag, photo upload to Emergent object storage (JPG/PNG/WebP ≤8MB, verified with PIL), alt text, reorder, cover; removed photos marked deleted; public /api/files/{path}
 - Real (non-sample) listings render without sample labels; AI assistant/follow-ups distinguish sample vs real

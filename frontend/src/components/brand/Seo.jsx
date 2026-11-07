@@ -1,6 +1,6 @@
 import { SITE_URL } from "@/lib/site";
 
-export function Seo({ title, description, path = "/", image = "/media/hero-dubai-villa-pool.jpg", jsonLd, noindex }) {
+export function Seo({ title, description, path = "/", image = "/media/social-preview.jpg", jsonLd, noindex }) {
   const full = `${title} | Prayan`;
   const url = `${SITE_URL}${path}`;
   return (
@@ -11,7 +11,7 @@ export function Seo({ title, description, path = "/", image = "/media/hero-dubai
       <meta property="og:title" content={full} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />
-      <meta property="og:image" content={`${SITE_URL}${image}`} />
+      <meta property="og:image" content={/^https?:/.test(image) ? image : `${SITE_URL}${image}`} />
       <meta name="twitter:card" content="summary_large_image" />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}

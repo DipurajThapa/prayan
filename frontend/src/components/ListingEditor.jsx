@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { api, formatApiError } from "@/lib/api";
 import { LOCATIONS, PROPERTY_TYPES } from "@/lib/site";
 import { media } from "@/lib/media";
+import { Img } from "@/components/brand/Img";
 import { Field, SelectInput, TextArea, TextInput } from "@/components/brand/Field";
 import { StatusMessage } from "@/components/brand/StatusMessage";
 import { BrandButton } from "@/components/brand/BrandButton";
@@ -126,7 +127,7 @@ function PhotoManager({ images, onChange, error }) {
       fd.append("file", file);
       try {
         const { data } = await api.post("/admin/uploads", fd);
-        added.push({ path: data.path, alt: file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ") });
+        added.push({ path: data.path, ...(data.thumb && { thumb: data.thumb }), alt: file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ") });
       } catch (err) { setUpError(`${file.name}: ${formatApiError(err, "upload failed")}`); }
       setUploading((n) => n - 1);
     }
@@ -146,7 +147,7 @@ function PhotoManager({ images, onChange, error }) {
           return (
             <div key={typeof im === "string" ? im : im.path} className="overflow-hidden rounded-xl border border-line bg-white" data-testid={`listing-photo-${i}`}>
               <div className="relative aspect-[16/10]">
-                <img src={m.src} alt={m.alt} className="h-full w-full object-cover" />
+                <Img image={m} thumb sizes="(min-width: 640px) 320px, 100vw" className="h-full w-full object-cover" />
                 {i === 0 && <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-semibold text-midnight"><Star className="h-3 w-3 text-ember" strokeWidth={2} />Cover</span>}
                 <div className="absolute right-2 top-2 flex gap-1">
                   <IconBtn label="Move earlier" disabled={i === 0} onClick={() => move(i, -1)}><ArrowLeft className="h-3.5 w-3.5" /></IconBtn>

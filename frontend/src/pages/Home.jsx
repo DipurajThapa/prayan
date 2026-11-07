@@ -16,6 +16,7 @@ import { ArrowRight, Pause, Play, Compass, Handshake, MessageSquareText, ListChe
 import { api } from "@/lib/api";
 import { CONTACT, SITE_URL } from "@/lib/site";
 import { media } from "@/lib/media";
+import { Img } from "@/components/brand/Img";
 import { Seo, SectionHeading } from "@/components/brand/Seo";
 import { BrandButton } from "@/components/brand/BrandButton";
 import { HeroLeadForm } from "@/components/HeroLeadForm";
@@ -52,20 +53,37 @@ export default function Home() {
   );
 }
 
+// The hero photo is the first paint; the video is fetched only after the page has finished loading,
+// and not at all for visitors on Data Saver or a slow connection. It fades in over the photo once it plays.
+function useAfterLoad() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const conn = navigator.connection;
+    if (conn && (conn.saveData || /(^|-)(2g|3g)$/.test(conn.effectiveType || ""))) return undefined;
+    let idle;
+    const go = () => { idle = (window.requestIdleCallback || ((cb) => setTimeout(cb, 200)))(() => setReady(true)); };
+    if (document.readyState === "complete") go(); else window.addEventListener("load", go, { once: true });
+    return () => { window.removeEventListener("load", go); if (idle && window.cancelIdleCallback) window.cancelIdleCallback(idle); };
+  }, []);
+  return ready;
+}
+
 function HeroVideo() {
   const ref = useRef(null);
   const [playing, setPlaying] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [reduced] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const ready = useAfterLoad();
   const v = media("hero-dubai-mansion-skyline-video");
-  if (reduced) return null;
+  if (reduced || !ready) return null;
   const toggle = () => {
     if (!ref.current) return;
     if (ref.current.paused) { ref.current.play(); setPlaying(true); } else { ref.current.pause(); setPlaying(false); }
   };
   return (
     <>
-      <video ref={ref} src={v.src} poster={v.poster} autoPlay muted loop playsInline preload="metadata" aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover" data-testid="hero-video" />
+      <video ref={ref} src={v.src} autoPlay muted loop playsInline preload="auto" aria-hidden="true" onPlaying={() => setVisible(true)}
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`} data-testid="hero-video" />
       <button type="button" onClick={toggle} aria-label={playing ? "Pause background video" : "Play background video"} data-testid="hero-video-toggle"
         className="absolute bottom-6 left-6 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-midnight/40 text-white backdrop-blur-md transition-colors hover:bg-white hover:text-midnight">
         {playing ? <Pause className="h-4 w-4" strokeWidth={1.75} /> : <Play className="h-4 w-4" strokeWidth={1.75} />}
@@ -81,9 +99,13 @@ function Hero() {
   return (
     <section className="relative" data-testid="home-hero">
       <div className="relative min-h-[560px] overflow-hidden lg:min-h-[calc(100vh-72px)]">
+        {/* srcset/sizes must stay identical to the preload in public/index.html (written by scripts/optimize_media.py) */}
         <picture>
-          <source media="(max-width: 767px)" srcSet={img.mobile} />
-          <img src={img.src} alt={img.alt} fetchpriority="high" width="2000" height="1333" className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
+          <source media="(max-width: 767px)" type="image/avif" srcSet={img.mobile.avif} sizes="100vw" />
+          <source media="(max-width: 767px)" type="image/webp" srcSet={img.mobile.webp} sizes="100vw" />
+          <source type="image/avif" srcSet={img.avif} sizes="100vw" />
+          <source type="image/webp" srcSet={img.webp} sizes="100vw" />
+          <img src={img.src} alt={img.alt} fetchpriority="high" width={img.w} height={img.h} className="absolute inset-0 h-full w-full animate-slow-zoom object-cover" />
         </picture>
         {desktop && <HeroVideo />}
         <div className="absolute inset-0 bg-gradient-to-r from-midnight/85 via-midnight/55 to-midnight/10" aria-hidden="true" />
@@ -178,7 +200,7 @@ function Journey() {
   return (
     <section className="container-x grid gap-12 py-20 lg:grid-cols-12 lg:items-center lg:gap-16 lg:py-28" aria-labelledby="journey-heading">
       <div className="relative lg:col-span-5">
-        <img src={img.src} alt={img.alt} loading="lazy" className="aspect-[4/5] w-full rounded-[24px] object-cover" />
+        <Img image={img} sizes="(min-width: 1280px) 480px, (min-width: 1024px) 38vw, 100vw" loading="lazy" decoding="async" className="aspect-[4/5] w-full rounded-[24px] object-cover" />
         <div className="absolute -bottom-6 right-6 rounded-2xl bg-midnight p-6 text-white shadow-xl sm:-right-6">
           <p className="font-display text-4xl font-extrabold">4</p>
           <p className="text-sm text-white/75">simple steps, no account needed</p>
@@ -221,7 +243,7 @@ function AssistantIntro() {
           <BrandButton variant="accent" size="lg" className="mt-10" onClick={() => openChat()} data-testid="assistant-talk-btn"><MessageSquareText className="h-4 w-4" strokeWidth={1.75} />Talk to Prayan</BrandButton>
         </div>
         <div className="relative hidden min-h-[420px] lg:block">
-          <img src={media("dubai-skyline").src} alt={media("dubai-skyline").alt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+          <Img image="dubai-skyline" sizes="(min-width: 1280px) 640px, (min-width: 1024px) 50vw, 100vw" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/30 to-transparent" />
           <div className="absolute bottom-10 right-10 w-72 space-y-2 rounded-2xl bg-white/95 p-4 text-[13px] shadow-xl backdrop-blur">
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slateink">Example conversation</p>
