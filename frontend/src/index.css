@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 216 50% 98%;
+        --foreground: 218 46% 16%;
+        --card: 0 0% 100%;
+        --card-foreground: 218 46% 16%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 218 46% 16%;
+        --primary: 213 66% 18%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 216 40% 95%;
+        --secondary-foreground: 213 66% 18%;
+        --muted: 216 40% 95%;
+        --muted-foreground: 217 21% 40%;
+        --accent: 220 70% 47%;
+        --accent-foreground: 0 0% 100%;
+        --destructive: 0 72% 45%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 214 32% 91%;
+        --input: 214 32% 88%;
+        --ring: 220 70% 47%;
+        --radius: 0.875rem;
+    }
+    * { @apply border-border; }
+    html { scroll-behavior: smooth; }
+    body {
+        @apply bg-soft text-charcoal font-sans antialiased;
+        font-size: 16px;
+        line-height: 1.65;
+    }
+    h1, h2, h3, h4 { @apply font-display text-midnight; letter-spacing: -0.02em; }
+    ::selection { background: #245DCC; color: #fff; }
+    :focus-visible { outline: 2px solid #245DCC; outline-offset: 3px; border-radius: 6px; }
+}
+
+@layer components {
+    .container-x { @apply mx-auto w-full max-w-[1280px] px-5 sm:px-8 lg:px-12; }
+    .eyebrow { @apply inline-flex items-center gap-2 font-display text-xs font-semibold uppercase tracking-[0.18em] text-sapphire; }
+    .eyebrow::before { content: ""; @apply inline-block h-1.5 w-1.5 rounded-[2px] bg-ember; }
+    .h2 { @apply font-display text-3xl font-bold tracking-tight text-midnight sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]; }
+    .lead { @apply text-base leading-relaxed text-slateink md:text-lg; }
+    .field { @apply w-full rounded-xl border border-line bg-white px-4 py-3 text-[15px] text-charcoal placeholder:text-slateink/60 transition-[border-color,box-shadow] duration-200 focus:border-sapphire focus:outline-none focus:ring-4 focus:ring-sapphire/10; }
+    .card-soft { @apply rounded-2xl border border-line bg-white shadow-[0_1px_2px_rgba(16,43,77,0.04),0_12px_32px_-18px_rgba(16,43,77,0.18)]; }
+    .grid-lines { background-image: linear-gradient(rgba(16,43,77,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(16,43,77,0.05) 1px, transparent 1px); background-size: 56px 56px; }
+    .reveal { @apply animate-fade-up; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}

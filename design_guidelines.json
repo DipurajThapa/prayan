@@ -1,0 +1,145 @@
+{
+  "brand_identity": {
+    "name": "Prayan",
+    "tagline": "Find your place in Dubai.",
+    "positioning": "Premium, mobile-first AI-powered Dubai real estate search and advisory concierge.",
+    "aesthetic": "Light soft-white architectural editorial layout, large rounded-corner photo panels, thin vertical divider-lined feature columns, soft edges, restrained shadows, subtle geometric details, and high-trust editorial elegance.",
+    "anti_patterns": [
+      "Do NOT create a dark sci-fi neon AI grid look",
+      "Do NOT use generic blue SaaS templates or default Vercel design",
+      "Do NOT center-align body copy paragraphs or list items",
+      "Do NOT use transparent popovers or translucent overlays without proper fallback opacity"
+    ]
+  },
+  "color_system": {
+    "midnight_blue": "#102B4D",
+    "sapphire_blue": "#245DCC",
+    "warm_orange": "#FF7A38",
+    "soft_white": "#F7F9FC",
+    "charcoal": "#16233B",
+    "usage": {
+      "background_primary": "#F7F9FC",
+      "background_secondary": "#FFFFFF",
+      "text_primary": "#16233B",
+      "text_muted": "#51627D",
+      "brand_primary": "#102B4D",
+      "brand_accent": "#245DCC",
+      "highlight_orange": "#FF7A38",
+      "card_dark_stat": "#102B4D",
+      "border_subtle": "#E2E8F0"
+    },
+    "rules": [
+      "Warm Orange (#FF7A38) is strictly reserved for selected action highlights, badge accents, and small detail focus indicators.",
+      "Main visual identity rests on Midnight Blue (#102B4D), Sapphire Blue (#245DCC), and Soft White (#F7F9FC).",
+      "Ensure all interactive text states explicitly set text colors (e.g. hover:bg-slate-900 hover:text-white)."
+    ]
+  },
+  "typography": {
+    "heading_font": "Manrope, sans-serif",
+    "body_font": "DM Sans, sans-serif",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#102B4D]",
+      "h3": "text-xl sm:text-2xl font-semibold tracking-tight text-[#16233B]",
+      "h4": "text-lg sm:text-xl font-medium text-[#16233B]",
+      "body": "text-base leading-relaxed text-[#51627D]",
+      "caption": "text-xs sm:text-sm font-medium tracking-wider uppercase text-[#245DCC]"
+    },
+    "google_fonts_import": "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Manrope:wght@300;400;500;600;700;800&display=swap"
+  },
+  "icons": {
+    "library": "lucide-react",
+    "stroke_width": 1.75,
+    "rules": "Use Lucide icons strictly with uniform stroke width. Never mix emoji characters as interface icons."
+  },
+  "layout_and_grid": {
+    "spacing_philosophy": "Generous architectural whitespace, 2-3x typical density for marketing components (py-16 to py-28 for sections).",
+    "grid_structure": {
+      "hero_bento": "grid grid-cols-1 lg:grid-cols-12 gap-8 items-center",
+      "feature_columns": "grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200 gap-6",
+      "property_grid": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
+      "dashboard_grid": "grid grid-cols-1 lg:grid-cols-12 gap-6"
+    },
+    "rounded_corners": "Use large rounded architectural frames: rounded-3xl (24px) for main image panels and hero cards, rounded-2xl for property cards, rounded-full for action pills."
+  },
+  "pages_to_implement": [
+    {
+      "route": "/",
+      "name": "Home",
+      "description": "Full-width architectural hero with semi-transparent AI lead enquiry card ('Let's find what fits.'), multi-step follow-up form, featured properties, architectural benefits, 4-step customer journey, AI assistant intro banner, FAQ accordion, and floating AI chat button."
+    },
+    {
+      "route": "/properties",
+      "name": "Explore Properties",
+      "description": "Property catalog with live filter bar (location, property type, price range, bedrooms, status search), grid/map layout toggle, property cards, and sorting options."
+    },
+    {
+      "route": "/properties/:id",
+      "name": "Property Details",
+      "description": "Immersive image gallery, specs breakdown, interactive Dubai location details, curated luxury amenities, pricing calculator/breakdown, and direct enquiry/viewing request CTAs."
+    },
+    {
+      "route": "/how-it-works",
+      "name": "How It Works",
+      "description": "Visual breakdown of Prayan's AI property matching mechanism, concierge agent support, verified property listings, and end-to-end buying process."
+    },
+    {
+      "route": "/contact",
+      "name": "Contact",
+      "description": "Direct contact form, Dubai office addresses (Downtown Dubai & Palm Jumeirah), concierge hotline, and quick AI enquiry trigger."
+    },
+    {
+      "route": "/dashboard",
+      "name": "Owner Dashboard",
+      "description": "Protected admin dashboard showing lead metrics, new enquiries, pending follow-ups, viewing requests, detailed enquiry drawer, and AI-generated editable follow-up message generator with instant copy button."
+    },
+    {
+      "route": "/privacy",
+      "name": "Privacy Policy",
+      "description": "Clean editorial legal document regarding data usage, AI lead consent, and UAE privacy standards."
+    },
+    {
+      "route": "/terms",
+      "name": "Terms of Service",
+      "description": "Terms governing property enquiries, advisory services, and platform usage."
+    }
+  ],
+  "components": {
+    "shared": [
+      "Header with sticky glassmorphism backdrop (bg-[#F7F9FC]/90 backdrop-blur-md), centered nav links, and pill CTA ('Talk to Prayan')",
+      "Mobile Navigation Drawer with smooth toggle and accessible action shortcuts",
+      "Hero AI Lead Form Card ('Let's find what fits.') with multi-step flow (Type/Location/Budget -> Contact -> Consent -> Confirmation)",
+      "Property Card with large rounded photos, price badge, location label, key specs (Beds/Baths/Sqft), and 'Request a Viewing' pill CTA",
+      "Floating AI Chat Widget ('Talk to Prayan') with interactive quick-prompt questions and real-time response simulator",
+      "Owner Dashboard Lead Table & AI Follow-Up Message Editor with tone selection and copy-to-clipboard button",
+      "FAQ Accordion with smooth height transitions and clear response typography",
+      "Footer with newsletter subscription form, quick site links, legal disclaimers, and social links",
+      "Consent Control Modal/Checkbox compliant with UAE lead preferences"
+    ]
+  },
+  "required_ctas": [
+    "Explore Properties",
+    "Ask Prayan",
+    "Start My Enquiry",
+    "Request a Viewing",
+    "Talk to Prayan",
+    "Send My Enquiry"
+  ],
+  "image_urls": {
+    "hero_villa": "https://images.unsplash.com/photo-1524234599372-a5bd0194758d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwxfHxkdWJhaSUyMHJlYWwlMjBlc3RhdGUlMjBwcm9wZXJ0eSUyMGludGVyaW9yJTIwbHV4dXJ5JTIwYXBhcnRtZW50JTIwcG9vbHxlbnwwfHx8fDE3OTQwMzkzNzZ8MA&ixlib=rb-4.1.0&q=85",
+    "downtown_penthouse": "https://images.unsplash.com/photo-1698948684109-01de0994a832?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwyfHxkdWJhaSUyMHJlYWwlMjBlc3RhdGUlMjBwcm9wZXJ0eSUyMGludGVyaW9yJTIwbHV4dXJ5JTIwYXBhcnRtZW50JTIwcG9vbHxlbnwwfHx8fDE3OTQwMzkzNzZ8MA&ixlib=rb-4.1.0&q=85",
+    "palm_waterfront": "https://images.unsplash.com/photo-1468824357306-a439d58ccb1c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwzfHxkdWJhaSUyMHJlYWwlMjBlc3RhdGUlMjBwcm9wZXJ0eSUyMGludGVyaW9yJTIwbHV4dXJ5JTIwYXBhcnRtZW50JTIwcG9vbHxlbnwwfHx8fDE3OTQwMzkzNzZ8MA&ixlib=rb-4.1.0&q=85",
+    "marina_residence": "https://images.unsplash.com/photo-1575404215583-863f8d55a411?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHw0fHxkdWJhaSUyMHJlYWwlMjBlc3RhdGUlMjBwcm9wZXJ0eSUyMGludGVyaW9yJTIwbHV4dXJ5JTIwYXBhcnRtZW50JTIwcG9vbHxlbnwwfHx8fDE3OTQwMzkzNzZ8MA&ixlib=rb-4.1.0&q=85",
+    "dubai_skyline": "https://images.unsplash.com/photo-1531586024505-b040066c2d5b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHw0fHxyZWFsJTIwZXN0YXRlJTIwYWdlbnQlMjBkdWJhaSUyMHBvcnRyYWl0JTIwcHJvZmVzc2lvbmFsJTIwYXJjaGl0ZWN0dXJhbCUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzk0MDM5Mzc2fDA&ixlib=rb-4.1.0&q=85",
+    "burj_view": "https://images.unsplash.com/photo-1518684079-3c830dcef090?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHxfHxyZWFsJTIwZXN0YXRlJTIwYWdlbnQlMjBkdWJhaSUyMHBvcnRyYWl0JTIwcHJvZmVzc2lvbmFsJTIwYXJjaGl0ZWN0dXJhbCUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzk0MDM5Mzc2fDA&ixlib=rb-4.1.0&q=85",
+    "advisor_portrait": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjBhZ2VudCUyMGFkdmlzb3IlMjBwb3J0cmFpdCUyMHNtaWxpbmd8ZW58MHx8fHwxNzk0MDM5MzgwfDA&ixlib=rb-4.1.0&q=85"
+  },
+  "testing_requirements": {
+    "data_testid_rules": "All interactive elements (buttons, inputs, filters, tabs, lead steps, chat toggles, modal triggers, copy buttons) MUST include unambiguous kebab-case data-testid attributes (e.g., data-testid='hero-lead-submit-button', data-testid='property-card-view-details-1', data-testid='ai-followup-copy-btn')."
+  },
+  "motion_and_accessibility": {
+    "animations": "Subtle framer-motion or CSS transitions for tab switches, drawer reveals, and step transitions.",
+    "reduced_motion": "Wrap non-essential motion in prefers-reduced-motion checks.",
+    "contrast": "Strict APCA / WCAG 4.5:1 text contrast for body copy and 3:1 for interactive elements against background surfaces."
+  }
+}
