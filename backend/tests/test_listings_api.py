@@ -6,8 +6,9 @@ import pytest
 import requests
 from PIL import Image
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL").rstrip("/")
-OWNER = {"email": "dipurajthapa1@gmail.com", "password": "PrayanOwner-CTXK8bko"}
+from conftest import BASE_URL, OWNER_EMAIL, OWNER_PASSWORD
+
+OWNER = {"email": OWNER_EMAIL, "password": OWNER_PASSWORD}
 
 
 @pytest.fixture(scope="module")

@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 load_dotenv("/app/frontend/.env")
 load_dotenv("/app/backend/.env")
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL").rstrip("/")
-OWNER_EMAIL = "dipurajthapa1@gmail.com"
-OWNER_PASSWORD = "PrayanOwner-CTXK8bko"
+OWNER_EMAIL = os.environ["ADMIN_EMAIL"]
+OWNER_PASSWORD = os.environ["ADMIN_PASSWORD"]
 
 
 @pytest.fixture(scope="session")

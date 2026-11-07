@@ -2,7 +2,7 @@ import json
 import uuid
 import pytest
 import requests
-from conftest import BASE_URL, OWNER_EMAIL
+from conftest import BASE_URL, OWNER_EMAIL, OWNER_PASSWORD
 
 A = f"{BASE_URL}/api"
 
@@ -175,7 +175,7 @@ class TestNewsletter:
 class TestAuthAdmin:
     def test_login_cookies(self):
         s = requests.Session()
-        r = s.post(f"{A}/auth/login", json={"email": OWNER_EMAIL, "password": "PrayanOwner-CTXK8bko"})
+        r = s.post(f"{A}/auth/login", json={"email": OWNER_EMAIL, "password": OWNER_PASSWORD})
         assert r.status_code == 200 and r.json()["email"] == OWNER_EMAIL
         sc = r.headers.get("set-cookie", "")
         assert "access_token" in sc and "HttpOnly" in sc and "refresh_token" in sc
