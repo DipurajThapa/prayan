@@ -15,7 +15,7 @@ export function Footer() {
             Prayan helps you explore Dubai property options, ask clear questions and send an enquiry that a real person follows up.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-10 lg:col-span-4">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-[auto_1fr] lg:col-span-4">
           <div>
             <p className="font-display text-sm font-semibold text-white">Explore</p>
             <ul className="mt-4 space-y-3 text-[15px] text-white/70">
@@ -27,7 +27,7 @@ export function Footer() {
             <ul className="mt-4 space-y-3 text-[15px] text-white/70">
               <li><a href={`tel:${CONTACT.phone}`} className="flex items-center gap-2 hover:text-white" data-testid="footer-phone"><Phone className="h-4 w-4" strokeWidth={1.75} />{CONTACT.phoneDisplay}</a></li>
               <li><a href={CONTACT.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white" data-testid="footer-whatsapp"><MessageCircle className="h-4 w-4" strokeWidth={1.75} />WhatsApp</a></li>
-              <li><a href={`mailto:${CONTACT.email}`} className="flex items-center gap-2 break-all hover:text-white" data-testid="footer-email"><Mail className="h-4 w-4 shrink-0" strokeWidth={1.75} />{CONTACT.email}</a></li>
+              <li><a href={`mailto:${CONTACT.email}`} className="flex items-center gap-2 whitespace-nowrap text-[14px] hover:text-white" data-testid="footer-email"><Mail className="h-4 w-4 shrink-0" strokeWidth={1.75} />{CONTACT.email}</a></li>
               <li className="flex items-center gap-2"><MapPin className="h-4 w-4" strokeWidth={1.75} />{CONTACT.city}</li>
             </ul>
           </div>

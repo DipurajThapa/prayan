@@ -79,7 +79,7 @@ function Gallery({ images, title }) {
     <section className="container-x mt-6" aria-label={`${title} photo gallery`}>
       <div className="relative overflow-hidden rounded-[24px]">
         <img src={main.src} alt={main.alt} className="aspect-[4/3] w-full object-cover sm:aspect-[16/8]" data-testid="gallery-main-image" />
-        <div className="absolute left-5 top-5 flex gap-2"><SampleBadge /><SampleBadge label="Illustrative photography" /></div>
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2 pr-4"><SampleBadge /><SampleBadge label="Illustrative photos" /></div>
       </div>
       <div className="mt-3 flex gap-3 overflow-x-auto pb-1">
         {images.map((k, i) => (

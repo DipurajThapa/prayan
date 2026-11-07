@@ -74,7 +74,7 @@ export function ChatWidget() {
     <>
       {!open && (
         <button onClick={() => setOpen(true)} data-testid="chat-widget-open-btn" aria-label="Talk to Prayan"
-          className="fixed bottom-5 right-5 z-50 inline-flex h-14 items-center gap-2 rounded-full bg-midnight pl-5 pr-6 font-display text-sm font-semibold text-white shadow-[0_18px_40px_-14px_rgba(16,43,77,0.7)] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-sapphire">
+          className="fixed bottom-5 right-5 z-50 inline-flex h-14 items-center gap-2 rounded-full bg-midnight pl-5 pr-6 font-display text-sm font-semibold text-white ring-2 ring-white/80 shadow-[0_18px_40px_-14px_rgba(16,43,77,0.7)] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-sapphire">
           <MessageSquareText className="h-5 w-5" strokeWidth={1.75} /><span className="hidden sm:inline">Talk to Prayan</span>
           <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-ember" />
         </button>

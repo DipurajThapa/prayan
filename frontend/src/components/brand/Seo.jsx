@@ -31,7 +31,7 @@ export function SectionHeading({ eyebrow, title, children, className = "", as: H
 
 export function SampleBadge({ className = "", label = "Sample listing" }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 font-display text-[11px] font-semibold uppercase tracking-[0.12em] text-midnight shadow-sm ${className}`}>
+    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white/95 px-3 py-1 font-display text-[11px] font-semibold uppercase tracking-[0.12em] text-midnight shadow-sm ${className}`}>
       <span className="h-1.5 w-1.5 rounded-full bg-ember" />{label}
     </span>
   );

@@ -55,23 +55,24 @@ export function EnquiryForm({ propertySlug, allowViewing, idPrefix = "enquiry", 
         <div className="grid grid-cols-2 gap-1 rounded-full bg-soft p-1" role="tablist">
           {[["property", "Ask About This Property"], ["viewing", "Request a Viewing"]].map(([m, label]) => (
             <button key={m} type="button" role="tab" aria-selected={mode === m} onClick={() => setMode(m)} data-testid={`${idPrefix}-mode-${m}`}
-              className={cn("h-10 rounded-full px-3 text-[13px] font-semibold transition-colors sm:text-sm", mode === m ? "bg-white text-midnight shadow-sm" : "text-slateink hover:text-midnight")}>{label}</button>
+              className={cn("h-10 whitespace-nowrap rounded-full px-2 text-[12px] font-semibold transition-colors sm:text-sm", mode === m ? "bg-white text-midnight shadow-sm" : "text-slateink hover:text-midnight")}>{label}</button>
           ))}
         </div>
       )}
-      <ContactFields idPrefix={idPrefix} value={contact} onChange={setContact} errors={errors} />
-      {viewing && (
-        <Field id={`${idPrefix}-date`} label="Preferred viewing date (optional)" hint="The team will confirm a time that works.">
-          <div className="relative">
-            <CalendarDays className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slateink" strokeWidth={1.75} />
-            <TextInput id={`${idPrefix}-date`} type="date" value={date} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDate(e.target.value)} />
-          </div>
+      <ContactFields idPrefix={idPrefix} value={contact} onChange={setContact} errors={errors} beforeConsent={<>
+        {viewing && (
+          <Field id={`${idPrefix}-date`} label="Preferred viewing date (optional)" hint="The team will confirm a time that works.">
+            <div className="relative">
+              <CalendarDays className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slateink" strokeWidth={1.75} />
+              <TextInput id={`${idPrefix}-date`} type="date" value={date} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDate(e.target.value)} />
+            </div>
+          </Field>
+        )}
+        <Field id={`${idPrefix}-message`} label={messageRequired ? "Your message" : "Anything else? (optional)"} error={errors.message}>
+          <TextArea id={`${idPrefix}-message`} value={message} maxLength={1500} invalid={errors.message} onChange={(e) => setMessage(e.target.value)}
+            placeholder={propertySlug ? "For example: Is there a payment plan? Which floor is it on?" : "Tell us what you are looking for, or ask a question."} />
         </Field>
-      )}
-      <Field id={`${idPrefix}-message`} label={messageRequired ? "Your message" : "Anything else? (optional)"} error={errors.message}>
-        <TextArea id={`${idPrefix}-message`} value={message} maxLength={1500} invalid={errors.message} onChange={(e) => setMessage(e.target.value)}
-          placeholder={propertySlug ? "For example: Is there a payment plan? Which floor is it on?" : "Tell us what you are looking for, or ask a question."} />
-      </Field>
+      </>} />
       <input type="text" tabIndex={-1} autoComplete="off" value={honey} onChange={(e) => setHoney(e.target.value)} className="hidden" aria-hidden="true" />
       {state.status === "error" && <StatusMessage type="error" testId={`${idPrefix}-error`}>{state.message}</StatusMessage>}
       <BrandButton type="submit" size="lg" className="w-full" disabled={state.status === "loading"} data-testid={`${idPrefix}-submit-btn`}>

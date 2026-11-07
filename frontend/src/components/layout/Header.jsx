@@ -19,7 +19,7 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-soft/90 backdrop-blur-md" data-testid="site-header">
+    <header className={cn("sticky top-0 border-b border-line/70 bg-soft/90 backdrop-blur-md", open ? "z-[60]" : "z-40")} data-testid="site-header">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2">Skip to content</a>
       <div className="container-x flex h-[72px] items-center justify-between gap-6">
         <Link to="/" aria-label="Prayan home" data-testid="header-logo-link"><Logo /></Link>

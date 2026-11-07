@@ -10,8 +10,9 @@ import { BrandButton } from "@/components/brand/BrandButton";
 import { PropertyCard } from "@/components/PropertyCard";
 import { CtaSection } from "@/components/CtaSection";
 
-const PRICES = { "Up to AED 2M": 2000000, "Up to AED 5M": 5000000, "Up to AED 10M": 10000000, "Up to AED 30M": 30000000 };
-const BEDS = { "1+ bedrooms": 1, "2+ bedrooms": 2, "3+ bedrooms": 3, "4+ bedrooms": 4, "5+ bedrooms": 5 };
+const PRICES = [["2000000", "Up to AED 2M"], ["5000000", "Up to AED 5M"], ["10000000", "Up to AED 10M"], ["30000000", "Up to AED 30M"]];
+const BEDS = [1, 2, 3, 4, 5].map((n) => [String(n), `${n}+ bedrooms`]);
+const valid = (opts, v) => opts.some(([k]) => k === v);
 const FILTERS = ["location", "type", "beds", "price"];
 
 export default function Properties() {
@@ -25,8 +26,8 @@ export default function Properties() {
     const q = {};
     if (f.location) q.location = f.location;
     if (f.type) q.type = f.type;
-    if (BEDS[f.beds]) q.bedrooms = BEDS[f.beds];
-    if (PRICES[f.price]) q.max_price = PRICES[f.price];
+    if (valid(BEDS, f.beds)) q.bedrooms = Number(f.beds);
+    if (valid(PRICES, f.price)) q.max_price = Number(f.price);
     api.get("/properties", { params: q }).then((r) => setItems(r.data)).catch(() => { setError(true); setItems([]); });
   }, [f.location, f.type, f.beds, f.price]);
 
@@ -49,8 +50,8 @@ export default function Properties() {
         <div className="container-x grid grid-cols-2 gap-3 py-4 md:grid-cols-5 md:items-end">
           <Field id="filter-location" label="Location"><SelectInput id="filter-location" options={LOCATIONS.slice(0, -1)} placeholder="All areas" value={f.location} onChange={set("location")} /></Field>
           <Field id="filter-type" label="Property type"><SelectInput id="filter-type" options={PROPERTY_TYPES} placeholder="All types" value={f.type} onChange={set("type")} /></Field>
-          <Field id="filter-beds" label="Bedrooms"><SelectInput id="filter-beds" options={Object.keys(BEDS)} placeholder="Any" value={f.beds} onChange={set("beds")} /></Field>
-          <Field id="filter-price" label="Max price"><SelectInput id="filter-price" options={Object.keys(PRICES)} placeholder="Any price" value={f.price} onChange={set("price")} /></Field>
+          <Field id="filter-beds" label="Bedrooms"><SelectInput id="filter-beds" options={BEDS} placeholder="Any" value={f.beds} onChange={set("beds")} /></Field>
+          <Field id="filter-price" label="Max price"><SelectInput id="filter-price" options={PRICES} placeholder="Any price" value={f.price} onChange={set("price")} /></Field>
           <BrandButton variant="secondary" className="col-span-2 h-[50px] md:col-span-1" disabled={!active} onClick={() => setParams({}, { replace: true })} data-testid="filter-reset-btn">
             <RotateCcw className="h-4 w-4" strokeWidth={1.75} />Reset filters
           </BrandButton>

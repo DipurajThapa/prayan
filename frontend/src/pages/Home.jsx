@@ -1,4 +1,16 @@
 import { useEffect, useState } from "react";
+
+function useIsDesktop() {
+  const query = "(min-width: 1024px)";
+  const [match, setMatch] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setMatch(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return match;
+}
 import { Link } from "react-router-dom";
 import { ArrowRight, Compass, Handshake, MessageSquareText, ListChecks, MessagesSquare, ClipboardList, UserRoundCheck, ShieldCheck } from "lucide-react";
 import { api } from "@/lib/api";
@@ -43,6 +55,7 @@ export default function Home() {
 function Hero() {
   const { openChat } = useChat();
   const img = media("hero-dubai-villa-pool");
+  const desktop = useIsDesktop();
   return (
     <section className="relative" data-testid="home-hero">
       <div className="relative min-h-[560px] overflow-hidden lg:min-h-[calc(100vh-72px)]">
@@ -69,13 +82,15 @@ function Hero() {
             </div>
             <p className="mt-10 hidden text-xs text-white/60 lg:block">Photography is illustrative and does not show an available Prayan listing.</p>
           </div>
-          <div className="reveal hidden lg:col-span-6 lg:block xl:col-span-5" style={{ animationDelay: "320ms" }}><HeroLeadForm /></div>
+          {desktop && <div className="reveal lg:col-span-6 xl:col-span-5" style={{ animationDelay: "320ms" }}><HeroLeadForm /></div>}
         </div>
       </div>
-      <div className="container-x -mt-6 pb-4 lg:hidden">
-        <div className="relative z-10"><HeroLeadForm /></div>
-        <p className="mt-4 text-xs text-slateink">Photography is illustrative and does not show an available Prayan listing.</p>
-      </div>
+      {!desktop && (
+        <div className="container-x -mt-6 pb-4">
+          <div className="relative z-10"><HeroLeadForm /></div>
+          <p className="mt-4 text-xs text-slateink">Photography is illustrative and does not show an available Prayan listing.</p>
+        </div>
+      )}
     </section>
   );
 }

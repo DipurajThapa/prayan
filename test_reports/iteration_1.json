@@ -1,0 +1,55 @@
+{
+  "summary": "Iteration 1, full E2E of Prayan (backend + frontend). Backend: 25 of 26 pytest cases pass (properties and filters, AI clarify with real Claude, ai=true, enquiry validation 422s, honeypot, chat SSE stream with context memory and refusal to invent availability or service charges, chat/enquiry extraction, newsletter subscribe/duplicate/unsubscribe, auth cookies/401s, bcrypt hash, admin stats/patch/followup AI draft persistence). One failure: brute-force lockout can be bypassed. Frontend: all requested flows work. Hero multi-step form works on desktop and on mobile 390px, including validation, the AI clarify chips, skip, review, confirmation and matches. Explore filters update the URL and the result count, with an empty state and reset. Property detail works: gallery thumbs, sample notice, 'Ask Prayan' prefill, viewing tab with date, success state and 404 for an unknown slug. Contact form, chat widget, newsletter and unsubscribe (valid, invalid and missing token) all work. Dashboard works: redirect when signed out, login error, stats, tabs, detail, status change, follow-up generate/edit/save/copy persisted after reload, and logout. Google session-token auth via Bearer and cookie works. The SEO title and canonical are unique per page, robots.txt and sitemap.xml are served, and FAQPage JSON-LD is on the home page. Main issues: brute-force lockout bypass, an invisible 'already subscribed' message in the footer, duplicate hero form DOM ids, and minor mobile layout issues. Confirmation emails do not send because Emergent credits are insufficient (402). The UI handles this gracefully.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "POST /api/auth/login", "issue": "Brute-force lockout is bypassable. The identifier is request.client.host + email, but behind the k8s ingress client.host is a rotating ingress pod IP (seen 10.208.133.66 and .69), so the counts are spread across IPs. 8 consecutive wrong passwords all returned 401 and never 429. Fix: key the lockout on the X-Forwarded-For first hop (or on the email alone), not on request.client.host.", "priority": "HIGH"}
+    ],
+    "minor": [
+      {"endpoint": "POST /api/newsletter/subscribe", "issue": "Confirmation email is not sent: the emailer logs 'Email send refused: 402 Insufficient credits' (Emergent managed email). This is an account/credits issue, not code. The API returns email_sent=false and the UI correctly says the subscription is saved."},
+      {"endpoint": "POST /api/chat/enquiry", "issue": "Can be submitted repeatedly for the same session_id, which creates duplicate enquiries. The session_id is client-supplied and not tied to the caller, so anyone who knows a session_id could attach that transcript. Consider dedupe per session plus rate limiting."},
+      {"endpoint": "POST /api/lead/clarify, /api/chat/stream, /api/enquiries", "issue": "No rate limiting on public LLM-backed endpoints. Each call costs LLM credits (enquiries also calls the LLM for the summary)."},
+      {"endpoint": "matching_properties", "issue": "'Open to suggestions' + 'Not sure yet' matches all 6 listings, and the UI then says '6 sample listings match your location and budget'. The wording is slightly misleading when no constraints were given."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Newsletter (footer)", "issue": "The 'already subscribed' info message (StatusMessage type=info: text-midnight on bg-sapphire/5) is effectively invisible on the dark midnight footer. The same styling problem affects any info state on dark backgrounds. Add a dark variant (e.g. text-white, bg-white/10, border-white/20).", "selector": "[data-testid='newsletter-duplicate']", "priority": "MEDIUM"},
+      {"component": "HeroLeadForm (Home)", "issue": "Two HeroLeadForm instances are mounted at once (desktop one inside the hero, mobile one below it; one is hidden with CSS). This duplicates DOM ids (#hero-location, #hero-budget, #hero-name...) and every data-testid, which breaks label htmlFor association and accessibility and confuses tests. State is also lost when crossing the breakpoint. Render a single instance (e.g. reposition it with CSS/grid order), or use a media-query hook to mount only one.", "selector": "[data-testid='hero-lead-form']", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Footer (desktop)", "issues": ["Email 'dipuraj.thapa@gmail.com' wraps mid-word ('dipuraj.thapa@gm / ail.com') in the Contact column. Use break-all only at '@', or a wider column.", "The floating 'Talk to Prayan' button (bg-midnight) blends into the midnight footer when the user scrolls to the bottom. Add a ring/border or a lighter shade."]},
+      {"screen": "Mobile nav (390px)", "issues": ["The floating chat button overlaps the 'Start My Enquiry' CTA at the bottom of the open mobile menu. Hide the chat FAB while the menu is open."]},
+      {"screen": "Property detail (390px)", "issues": ["Email/Phone/WhatsApp method buttons overflow the form card; WhatsApp is clipped at the right edge. Wrap them or use a smaller gap/padding.", "The 'SAMPLE LISTING' and 'ILLUSTRATIVE PHOTOGRAPHY' badges wrap to two lines over the image.", "The 'Ask About This Property' tab label wraps to two lines."]},
+      {"screen": "Property detail viewing form", "issues": ["The preferred viewing date uses the native <input type='date'> browser picker instead of the shadcn Calendar/Popover.", "The consent checkbox appears before the date and message fields. Consent is usually placed last, just before submit."]},
+      {"screen": "Explore Properties", "issues": ["URL query values use display labels (e.g. ?beds=3%2B+bedrooms&price=Up+to+AED+2M), which is not clean or shareable. Consider ?beds=3&max_price=2000000."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_prayan_api.py", "/app/backend/tests/conftest.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Fix the login lockout identifier: use X-Forwarded-For (first IP) or the email alone, so that 5 failures give 429 regardless of which ingress pod handled the request",
+    "Give StatusMessage a dark variant for the footer newsletter (duplicate/info is invisible on midnight)",
+    "Render a single HeroLeadForm instance to remove duplicate DOM ids and testids",
+    "Fix the mobile property enquiry contact-method buttons overflowing at 390px",
+    "Hide the chat FAB when the mobile menu is open; give the FAB contrast against the dark footer",
+    "Fix the footer email wrapping",
+    "Replace the native date input with the shadcn Calendar",
+    "Optional: rate-limit public AI endpoints; dedupe /chat/enquiry per session",
+    "Email sending fails with 402 insufficient credits: the user needs to top up Emergent credits for real confirmation emails"
+  ],
+  "critical_code_review_comments": [
+    "routes_auth.login: request.client.host behind the ingress is not the client IP, which defeats the per-IP lockout (verified)",
+    "core.get_current_owner: if an access_token cookie is present but expired and the Authorization Bearer is also sent, the Bearer path is only used when no session_token cookie exists. The logic is acceptable but convoluted.",
+    "routes_public.create_enquiry awaits the LLM summary synchronously before responding (adds ~3-6s). Consider writing first and summarising in a background task.",
+    "ChatWidget.clean only strips a partial token at the end of the text; a lone '[' can flash briefly during streaming (cosmetic)",
+    "The hero form is mounted twice (see ui_bugs)"
+  ],
+  "updated_files": ["/app/backend/tests/test_prayan_api.py", "/app/backend/tests/conftest.py"],
+  "success_rate": {"backend": "96% (25/26)", "frontend": "~95% (all flows functional; 2 UI bugs + design issues)"},
+  "test_credentials": "Owner dipurajthapa1@gmail.com / PrayanOwner-CTXK8bko worked (from /app/memory/test_credentials.md). Password hash is $2b$ bcrypt. Cookies are httpOnly, secure, SameSite=None. CORS allows credentials with an explicit origin and rejects others.",
+  "seed_data_creation": "No seed data created. All TEST_ enquiries, subscribers, chat_sessions and user_sessions created during this run were deleted by id afterwards (the conftest session fixture plus manual cleanup of the UI-created ones).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: cd /app/backend && python -m pytest tests/ -v (pytest.ini forces -n 2; use -n 0 for serial). test_wrong_password_and_lockout is expected to fail until the lockout identifier fix lands. AI uses claude-opus-5-5 and works (clarify returns ai=true). Email sends fail with 402 credits. Two hero forms exist in the DOM, so use the ':visible' pseudo-selector on mobile. The chat SSE token [[SHARE_DETAILS]] is correctly hidden and auto-opens the details form. The Google session test was done by inserting user_sessions with token test_session_* (cleaned up afterwards).",
+  "rca of the issue": "Lockout bypass: login_attempts identifiers observed as '10.208.133.66:<email>' count 3 and '10.208.133.69:<email>' count 5 after 8 failures. The ingress load-balances across pods with different source IPs, so the per-ident counter rarely reaches 5 before the next request lands on another ident. Reproduce: POST /api/auth/login with a wrong password 6-8 times for one email; all return 401. Mitigation: ident = (request.headers.get('x-forwarded-for','').split(',')[0].strip() or request.client.host) + ':' + email, or lock on the email alone."
+}

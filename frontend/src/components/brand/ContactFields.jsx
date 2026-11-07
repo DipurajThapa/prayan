@@ -9,7 +9,7 @@ const METHODS = [
   { value: "whatsapp", label: "WhatsApp", Icon: MessageCircle },
 ];
 
-export function ContactFields({ idPrefix, value, onChange, errors = {}, compact }) {
+export function ContactFields({ idPrefix, value, onChange, errors = {}, compact, beforeConsent }) {
   const set = (k) => (v) => onChange({ ...value, [k]: v });
   return (
     <div className={cn("space-y-4", compact && "space-y-3")}>
@@ -23,9 +23,9 @@ export function ContactFields({ idPrefix, value, onChange, errors = {}, compact 
           {METHODS.map(({ value: m, label, Icon }) => (
             <button key={m} type="button" role="radio" aria-checked={value.contact_method === m}
               onClick={() => set("contact_method")(m)} data-testid={`${idPrefix}-method-${m}`}
-              className={cn("flex h-11 items-center justify-center gap-1.5 rounded-xl border text-sm font-medium transition-colors",
+              className={cn("flex h-11 min-w-0 items-center justify-center gap-1 rounded-xl border px-1 text-[13px] font-medium transition-colors sm:gap-1.5 sm:text-sm",
                 value.contact_method === m ? "border-sapphire bg-sapphire/5 text-sapphire" : "border-line bg-white text-slateink hover:border-midnight/30")}>
-              <Icon className="h-4 w-4" strokeWidth={1.75} />{label}
+              <Icon className="hidden h-4 w-4 shrink-0 min-[400px]:block" strokeWidth={1.75} /><span className="truncate">{label}</span>
             </button>
           ))}
         </div>
@@ -41,6 +41,7 @@ export function ContactFields({ idPrefix, value, onChange, errors = {}, compact 
             onChange={(e) => set("phone")(e.target.value)} placeholder="+971 50 000 0000" />
         </Field>
       )}
+      {beforeConsent}
       <ConsentCheckbox id={`${idPrefix}-consent`} checked={value.consent} onChange={set("consent")} error={errors.consent} />
     </div>
   );

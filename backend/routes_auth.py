@@ -30,9 +30,9 @@ def _set_jwt_cookies(response: Response, user: dict):
 
 
 @router.post("/login")
-async def login(body: LoginIn, request: Request, response: Response):
+async def login(body: LoginIn, response: Response):
     email = body.email.lower()
-    ident = f"{request.client.host if request.client else 'unknown'}:{email}"
+    ident = f"login:{email}"
     attempt = await db.login_attempts.find_one({"identifier": ident}, {"_id": 0})
     if attempt and attempt.get("count", 0) >= 5:
         locked_until = attempt["last"].replace(tzinfo=attempt["last"].tzinfo or now().tzinfo) + timedelta(minutes=15)

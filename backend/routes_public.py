@@ -4,7 +4,10 @@ import re
 import secrets
 from typing import Literal, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+import time
+from collections import defaultdict, deque
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
@@ -26,6 +29,18 @@ LOCATIONS = ["Downtown Dubai", "Dubai Marina", "Palm Jumeirah", "Dubai Hills Est
              "Jumeirah Village Circle", "Open to suggestions"]
 PHONE_RE = re.compile(r"^\+?[0-9 ()-]{7,20}$")
 PUBLIC_FIELDS = {"_id": 0}
+_HITS: dict = defaultdict(deque)
+
+
+def rate_limit(request: Request):
+    """Max 40 AI-backed requests per client per 10 minutes."""
+    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0].strip()
+    q, now_t = _HITS[ip], time.monotonic()
+    while q and now_t - q[0] > 600:
+        q.popleft()
+    if len(q) >= 40:
+        raise HTTPException(status_code=429, detail="Too many requests. Please wait a few minutes and try again.")
+    q.append(now_t)
 
 
 # ---------- Properties ----------
@@ -59,7 +74,7 @@ async def matching_properties(location: Optional[str], budget: Optional[str]) ->
     q: dict = {}
     if location and location in LOCATIONS and location != "Open to suggestions":
         q["location"] = location
-    if budget in BUDGETS:
+    if budget in BUDGETS and budget != "Not sure yet":
         lo, hi = BUDGETS[budget]
         q["price_aed"] = {"$gte": lo, "$lte": hi}
     if not q:
@@ -99,7 +114,7 @@ FALLBACK_CLARIFY = {
 }
 
 
-@router.post("/lead/clarify")
+@router.post("/lead/clarify", dependencies=[Depends(rate_limit)])
 async def lead_clarify(body: ClarifyIn):
     result = None
     try:
@@ -194,7 +209,7 @@ async def save_enquiry(doc: dict) -> dict:
     return doc
 
 
-@router.post("/enquiries")
+@router.post("/enquiries", dependencies=[Depends(rate_limit)])
 async def create_enquiry(body: EnquiryIn):
     if body.website:
         raise HTTPException(status_code=400, detail="Submission rejected.")
@@ -242,7 +257,7 @@ async def assistant_system(property_slug: Optional[str]) -> str:
     )
 
 
-@router.post("/chat/stream")
+@router.post("/chat/stream", dependencies=[Depends(rate_limit)])
 async def chat_stream(body: ChatIn):
     session = await db.chat_sessions.find_one({"session_id": body.session_id}, {"_id": 0})
     history = [{"role": m["role"], "content": m["content"]} for m in (session or {}).get("messages", [])][-20:]
@@ -300,8 +315,11 @@ EXTRACT_SYSTEM = (
 )
 
 
-@router.post("/chat/enquiry")
+@router.post("/chat/enquiry", dependencies=[Depends(rate_limit)])
 async def chat_enquiry(body: ChatEnquiryIn):
+    existing = await db.enquiries.find_one({"chat_session_id": body.session_id}, {"_id": 0, "id": 1, "summary": 1})
+    if existing:
+        return {"id": existing["id"], "summary": existing["summary"], "already_saved": True}
     session = await db.chat_sessions.find_one({"session_id": body.session_id}, {"_id": 0})
     messages = (session or {}).get("messages", [])
     transcript = "\n".join(f"{m['role'].upper()}: {m['content']}" for m in messages[-30:])

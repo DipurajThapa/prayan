@@ -27,7 +27,10 @@ export function SelectInput({ id, invalid, options, placeholder, className, ...p
       style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%2351627D' stroke-width='1.75' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")" }}
       data-testid={id} {...props}>
       {placeholder && <option value="">{placeholder}</option>}
-      {options.map((o) => <option key={o} value={o}>{o}</option>)}
+      {options.map((o) => {
+        const [v, l] = Array.isArray(o) ? o : [o, o];
+        return <option key={v} value={v}>{l}</option>;
+      })}
     </select>
   );
 }

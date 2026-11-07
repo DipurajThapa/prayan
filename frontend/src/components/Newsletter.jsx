@@ -52,13 +52,15 @@ export function Newsletter() {
   );
 }
 
+const DARK = "border-white/20 bg-white/10 text-white";
+
 function NewsletterResult({ state }) {
   if (state.status === "subscribed") {
-    return <StatusMessage type="success" className="mt-4" testId="newsletter-success">
+    return <StatusMessage type="success" className={`mt-4 ${DARK}`} testId="newsletter-success">
       You are subscribed. {state.emailSent ? "A confirmation email with an unsubscribe link is on its way." : "We could not send a confirmation email right now, but your subscription is saved."}
     </StatusMessage>;
   }
-  if (state.status === "already_subscribed") return <StatusMessage type="info" className="mt-4" testId="newsletter-duplicate">This email is already subscribed. No action needed.</StatusMessage>;
-  if (state.status === "error") return <StatusMessage type="error" className="mt-4" testId="newsletter-error">{state.message}</StatusMessage>;
+  if (state.status === "already_subscribed") return <StatusMessage type="info" className={`mt-4 ${DARK}`} testId="newsletter-duplicate">This email is already subscribed. No action needed.</StatusMessage>;
+  if (state.status === "error") return <StatusMessage type="error" className="mt-4 border-red-300/40 bg-red-500/15 text-white" testId="newsletter-error">{state.message}</StatusMessage>;
   return null;
 }
