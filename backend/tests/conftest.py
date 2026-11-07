@@ -7,8 +7,26 @@ from dotenv import load_dotenv
 load_dotenv("/app/frontend/.env")
 load_dotenv("/app/backend/.env")
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL").rstrip("/")
-OWNER_EMAIL = "dipurajthapa1@gmail.com"
-OWNER_PASSWORD = "PrayanOwner-CTXK8bko"
+# Owner credentials are never committed. Set TEST_OWNER_EMAIL / TEST_OWNER_PASSWORD in the
+# environment or in /app/backend/.env (gitignored). Tests that need them are skipped otherwise.
+OWNER_EMAIL = os.environ.get("TEST_OWNER_EMAIL", "").strip()
+OWNER_PASSWORD = os.environ.get("TEST_OWNER_PASSWORD", "")
+OWNER_CREDS_MISSING_MSG = (
+    "Owner credentials not configured: set TEST_OWNER_EMAIL and TEST_OWNER_PASSWORD "
+    "(environment or /app/backend/.env) to run owner/admin tests."
+)
+
+
+def require_owner_creds():
+    """Skip the calling test/fixture if owner credentials are not configured."""
+    if not (OWNER_EMAIL and OWNER_PASSWORD):
+        pytest.skip(OWNER_CREDS_MISSING_MSG)
+    return {"email": OWNER_EMAIL, "password": OWNER_PASSWORD}
+
+
+@pytest.fixture(scope="session")
+def owner_creds():
+    return require_owner_creds()
 
 
 @pytest.fixture(scope="session")
@@ -43,9 +61,9 @@ def api():
 
 
 @pytest.fixture(scope="session")
-def owner():
+def owner(owner_creds):
     s = requests.Session()
-    r = s.post(f"{BASE_URL}/api/auth/login", json={"email": OWNER_EMAIL, "password": OWNER_PASSWORD})
+    r = s.post(f"{BASE_URL}/api/auth/login", json=owner_creds)
     if r.status_code != 200:
         pytest.skip(f"Owner login failed {r.status_code} {r.text}")
     tok = s.cookies.get("access_token")

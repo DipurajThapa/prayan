@@ -36,7 +36,7 @@
   ],
   "updated_files": ["/app/backend/tests/test_listings_api.py"],
   "success_rate": {"backend": "100% (18/18 new + 26/26 regression)", "frontend": "~92% (all flows functional; 2 mobile layout bugs on the listing manager)"},
-  "test_credentials": "Owner dipurajthapa1@gmail.com / PrayanOwner-CTXK8bko from /app/memory/test_credentials.md worked.",
+  "test_credentials": "Owner credentials [redacted] from /app/memory/test_credentials.md worked.",
   "seed_data_creation": "None. All TEST_ listings were deleted (properties count is back to 6). The 3 db.files records for the test_photo.jpg uploads were deleted by id. The storage objects themselves remain because there is no delete API.",
   "retest_needed": false,
   "should_main_agent_self_test": true,

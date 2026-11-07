@@ -46,7 +46,7 @@
   ],
   "updated_files": ["/app/backend/tests/test_prayan_api.py", "/app/backend/tests/conftest.py"],
   "success_rate": {"backend": "96% (25/26)", "frontend": "~95% (all flows functional; 2 UI bugs + design issues)"},
-  "test_credentials": "Owner dipurajthapa1@gmail.com / PrayanOwner-CTXK8bko worked (from /app/memory/test_credentials.md). Password hash is $2b$ bcrypt. Cookies are httpOnly, secure, SameSite=None. CORS allows credentials with an explicit origin and rejects others.",
+  "test_credentials": "Owner credentials [redacted] worked (from /app/memory/test_credentials.md). Password hash is $2b$ bcrypt. Cookies are httpOnly, secure, SameSite=None. CORS allows credentials with an explicit origin and rejects others.",
   "seed_data_creation": "No seed data created. All TEST_ enquiries, subscribers, chat_sessions and user_sessions created during this run were deleted by id afterwards (the conftest session fixture plus manual cleanup of the UI-created ones).",
   "retest_needed": true,
   "should_main_agent_self_test": true,

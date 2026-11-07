@@ -7,13 +7,12 @@ import requests
 from PIL import Image
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL").rstrip("/")
-OWNER = {"email": "dipurajthapa1@gmail.com", "password": "PrayanOwner-CTXK8bko"}
 
 
 @pytest.fixture(scope="module")
-def own():
+def own(owner_creds):
     s = requests.Session()
-    r = s.post(f"{BASE_URL}/api/auth/login", json=OWNER)
+    r = s.post(f"{BASE_URL}/api/auth/login", json=owner_creds)
     if r.status_code != 200:
         pytest.skip(f"login failed {r.status_code}")
     s.headers.update({"Authorization": f"Bearer {s.cookies.get('access_token')}"})

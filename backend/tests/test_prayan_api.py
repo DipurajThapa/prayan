@@ -173,9 +173,9 @@ class TestNewsletter:
 
 # ---------- Auth & admin ----------
 class TestAuthAdmin:
-    def test_login_cookies(self):
+    def test_login_cookies(self, owner_creds):
         s = requests.Session()
-        r = s.post(f"{A}/auth/login", json={"email": OWNER_EMAIL, "password": "PrayanOwner-CTXK8bko"})
+        r = s.post(f"{A}/auth/login", json=owner_creds)
         assert r.status_code == 200 and r.json()["email"] == OWNER_EMAIL
         sc = r.headers.get("set-cookie", "")
         assert "access_token" in sc and "HttpOnly" in sc and "refresh_token" in sc
@@ -190,7 +190,7 @@ class TestAuthAdmin:
     def test_unauth_401(self, path):
         assert requests.get(f"{A}{path}").status_code == 401
 
-    def test_bcrypt_hash(self, mongo):
+    def test_bcrypt_hash(self, mongo, owner_creds):
         u = mongo.users.find_one({"email": OWNER_EMAIL})
         assert u["password_hash"].startswith("$2b$")
 
