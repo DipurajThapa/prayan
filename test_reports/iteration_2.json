@@ -1,0 +1,44 @@
+{
+  "summary": "Iteration 2 tested the Listing Manager and the Hero Video, plus a regression run. Backend: the new tests/test_listings_api.py passes 18 of 18, and the iteration-1 suite tests/test_prayan_api.py passes 26 of 26. The brute-force lockout test that failed in iteration 1 now passes. Frontend: every requested flow works. Signed out, /dashboard/listings redirects to /login. Owner login shows owner-nav-enquiries and owner-nav-listings. The list shows the 6 seeded listings with Published and Sample tags. Submitting an empty form shows all 10 field errors, including listing-photos-error. A .txt upload is rejected with 'Please upload a JPG, PNG or WebP image.' Two JPGs uploaded to real object storage and served from /api/files/...; the first photo shows Cover, and alt text, reorder and remove all work. Saving created the listing. The public card and detail page show no Sample badge or notice, the price label is 'Asking price', and the photo loads. Edits (title, price, unpublish) were still there after a reload, and the draft returns 404 publicly. Delete goes through the confirm dialog and removes the listing. Hero video at 1920px autoplays muted and looped (14s mp4, readyState 4), and the toggle pauses and plays with aria-label updates. At 390px there is no video and the mobile photo is used. With prefers-reduced-motion there is no video. Only one HeroLeadForm is mounted now, so the iteration-1 duplicate-id issue is fixed. Problems found: the listing manager overflows horizontally on mobile, the editor opens off-screen on mobile, and some minor UX and code issues listed below.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "DELETE /api/admin/properties/{slug}, photo remove in the editor", "issue": "When a listing is deleted or a photo is removed, the db.files records and the storage objects are never cleaned up or marked is_deleted. Orphaned files stay publicly served at /api/files/{path}."},
+      {"endpoint": "POST /api/admin/uploads", "issue": "The file type check trusts the Content-Type the client sends; there is no magic-byte or PIL check of the actual content. The whole file is also read into memory before the 8 MB check."},
+      {"endpoint": "routes_listings.to_doc", "issue": "The line `doc['images'] = [i if isinstance(i, str) else i for i in doc['images']]` does nothing (dead code)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "ListingManager list (mobile 390px)", "issue": "The page overflows horizontally (scrollWidth > innerWidth). Row titles are not truncated and run past the card edge. The grid column / li / button probably needs min-w-0 or overflow-hidden so that `truncate` takes effect.", "selector": "[data-testid='listing-list']", "priority": "MEDIUM"},
+      {"component": "ListingManager (mobile)", "issue": "Tapping New Listing or a row renders the editor below the 6-row list (editor top about 974px on an 844px viewport). The page does not scroll to it, so it looks as if nothing happened. Scroll the editor into view, or hide the list while editing on small screens.", "selector": "[data-testid='listing-new-btn']", "priority": "MEDIUM"},
+      {"component": "ListingEditor validation", "issue": "Error messages stay visible after the user fixes a field, until the next submit. After a photo is uploaded, the 'Add at least one photo' error and the red upload border also stay. Clear each field's error on change.", "selector": "[data-testid$='-error']", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Listing manager list", "issues": ["The external-link <a> is nested inside the row <button>, which is invalid interactive nesting and an accessibility issue. Make it a sibling element.", "Delete uses the native window.confirm instead of the shadcn AlertDialog."]},
+      {"screen": "Property detail with a single photo", "issues": ["A thumbnail strip with one thumbnail is shown. Hide the strip when there is only one image."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_listings_api.py", "/app/backend/tests/test_prayan_api.py", "/app/test_reports/pytest/pytest_listings.xml"],
+  "action_items": [
+    "Fix the horizontal overflow on the mobile listing manager (add min-w-0 to the grid column and the row content so truncate works)",
+    "On mobile, scroll the editor into view when New Listing or a row is tapped",
+    "Clear validation errors on field change and after a successful photo upload",
+    "Optional: soft-delete db.files entries when photos are removed or a listing is deleted; verify image magic bytes on upload",
+    "Optional: take the <a> out of the row <button>; replace window.confirm with the shadcn AlertDialog"
+  ],
+  "critical_code_review_comments": [
+    "ListingEditor PhotoManager.upload uses `images` from the closure at upload start: onChange([...images, ...added]). If the user edits alt text or removes a photo while an upload is in flight, that change is overwritten. Use a functional update.",
+    "With a multi-file upload that partly fails, only the last error is kept in upError.",
+    "admin_create: unique_slug followed by insert has a race; there is no unique index on properties.slug. Low risk with a single owner.",
+    "HeroVideo reads prefers-reduced-motion only once on mount and does not react to later changes (acceptable)."
+  ],
+  "updated_files": ["/app/backend/tests/test_listings_api.py"],
+  "success_rate": {"backend": "100% (18/18 new + 26/26 regression)", "frontend": "~92% (all flows functional; 2 mobile layout bugs on the listing manager)"},
+  "test_credentials": "Owner dipurajthapa1@gmail.com / PrayanOwner-CTXK8bko from /app/memory/test_credentials.md worked.",
+  "seed_data_creation": "None. All TEST_ listings were deleted (properties count is back to 6). The 3 db.files records for the test_photo.jpg uploads were deleted by id. The storage objects themselves remain because there is no delete API.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: cd /app/backend && python -m pytest tests/test_listings_api.py -n 0 (it creates and deletes TEST_ listings and uploads a generated JPG to real storage). Afterwards, clean up the db.files records with original_filename test_photo.jpg by id. The listing editor's published toggle defaults to false for new listings. Selects are native <select>, so use select_option. Delete uses window.confirm, so accept the dialog. The hero video is /media/hero-dubai-mansion-skyline.mp4 (4.8 MB) and only mounts on desktop (useIsDesktop) when prefers-reduced-motion is not set."
+}

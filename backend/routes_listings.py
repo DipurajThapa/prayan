@@ -1,9 +1,11 @@
+import io
 import logging
 import re
 import uuid
 from typing import List, Literal, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
+from PIL import Image
 from pydantic import BaseModel, Field, field_validator
 
 from core import db, get_current_owner, now_iso
@@ -62,10 +64,19 @@ async def unique_slug(base: str) -> str:
 
 def to_doc(body: ListingIn) -> dict:
     doc = body.model_dump()
-    doc["images"] = [i if isinstance(i, str) else i for i in doc["images"]]
     if doc["published"] and not doc["images"]:
         raise HTTPException(status_code=422, detail="Add at least one photo before publishing.")
     return doc
+
+
+def _paths(images) -> set:
+    return {i["path"] for i in images or [] if isinstance(i, dict)}
+
+
+async def release_files(old_images, new_images=()):
+    gone = _paths(old_images) - _paths(new_images)
+    if gone:
+        await db.files.update_many({"storage_path": {"$in": list(gone)}}, {"$set": {"is_deleted": True}})
 
 
 @admin.get("/properties")
@@ -86,17 +97,20 @@ async def admin_create(body: ListingIn):
 async def admin_update(slug: str, body: ListingIn):
     doc = to_doc(body)
     doc["updated_at"] = now_iso()
-    res = await db.properties.update_one({"slug": slug}, {"$set": doc})
-    if res.matched_count == 0:
+    old = await db.properties.find_one({"slug": slug}, {"_id": 0, "images": 1})
+    if not old:
         raise HTTPException(status_code=404, detail="Listing not found")
+    await db.properties.update_one({"slug": slug}, {"$set": doc})
+    await release_files(old.get("images"), doc["images"])
     return await db.properties.find_one({"slug": slug}, {"_id": 0})
 
 
 @admin.delete("/properties/{slug}")
 async def admin_delete(slug: str):
-    res = await db.properties.delete_one({"slug": slug})
-    if res.deleted_count == 0:
+    old = await db.properties.find_one_and_delete({"slug": slug}, {"_id": 0, "images": 1})
+    if not old:
         raise HTTPException(status_code=404, detail="Listing not found")
+    await release_files(old.get("images"))
     return {"ok": True}
 
 
@@ -105,11 +119,19 @@ async def upload_photo(file: UploadFile = File(...), owner: dict = Depends(get_c
     ext = ALLOWED_TYPES.get(file.content_type or "")
     if not ext:
         raise HTTPException(status_code=415, detail="Please upload a JPG, PNG or WebP image.")
-    data = await file.read()
+    data = await file.read(MAX_BYTES + 1)
     if len(data) > MAX_BYTES:
         raise HTTPException(status_code=413, detail="Each photo must be 8 MB or smaller.")
     if not data:
         raise HTTPException(status_code=422, detail="The file is empty.")
+    try:
+        with Image.open(io.BytesIO(data)) as im:
+            real = (im.format or "").lower()
+            im.verify()
+    except Exception:
+        raise HTTPException(status_code=415, detail="This file is not a valid image.")
+    if real not in ("jpeg", "png", "webp"):
+        raise HTTPException(status_code=415, detail="Please upload a JPG, PNG or WebP image.")
     path = f"{APP_NAME}/listings/{uuid.uuid4().hex}.{ext}"
     try:
         result = await put_object(path, data, file.content_type)

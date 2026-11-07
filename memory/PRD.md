@@ -13,6 +13,12 @@ User choices: Claude Opus 5.5; owner login email/password AND Emergent Google (a
 ## Personas
 Property seekers (buyers/investors/explorers); Owner (reviews enquiries, drafts follow-ups).
 
+## Implemented (2026-11-07, iteration 2)
+- Listing Manager at /dashboard/listings (owner only): create/edit/delete, publish/draft, featured, sample flag, photo upload to Emergent object storage (JPG/PNG/WebP ≤8MB, verified with PIL), alt text, reorder, cover; removed photos marked deleted; public /api/files/{path}
+- Real (non-sample) listings render without sample labels; AI assistant/follow-ups distinguish sample vs real
+- Hero video on desktop (Pexels 31977028, 14s muted loop, 4.7MB, pause button, reduced-motion respected); photo on mobile
+- Tested iteration_2: backend 44/44, frontend flows pass; mobile overflow, scroll-to-editor, error clearing, nested link fixed afterwards
+
 ## Implemented (2026-11-07)
 - All pages + shared design system; hero AI clarify → contact → review → save → accurate confirmation with sample matches
 - AI assistant: streaming, session memory, sample-data guarded, [[SHARE_DETAILS]] consented capture → chat enquiry (deduped per session)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ExternalLink, ImageOff, Plus } from "lucide-react";
 import { api, formatApiError } from "@/lib/api";
 import { formatAED } from "@/lib/site";
@@ -18,6 +18,11 @@ function Manager() {
   const [items, setItems] = useState(null);
   const [error, setError] = useState("");
   const [editing, setEditing] = useState(null); // null | "new" | slug
+
+  const editorRef = useRef(null);
+  useEffect(() => {
+    if (editing && window.innerWidth < 1024) editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [editing]);
 
   const load = async () => {
     try { const { data } = await api.get("/admin/properties"); setItems(data); }
@@ -42,8 +47,8 @@ function Manager() {
       </div>
       {error && <StatusMessage type="error" className="mt-6">{error}</StatusMessage>}
       <div className="mt-8 grid gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-4"><ListingList items={items} active={editing} onSelect={setEditing} /></div>
-        <div className="lg:col-span-8">
+        <div className="min-w-0 lg:col-span-4"><ListingList items={items} active={editing} onSelect={setEditing} /></div>
+        <div className="min-w-0 scroll-mt-24 lg:col-span-8" ref={editorRef}>
           {editing ? <ListingEditor key={editing} listing={current} onSaved={onSaved} onCancel={() => setEditing(null)} />
             : <div className="card-soft flex min-h-[320px] items-center justify-center p-10 text-center text-slateink">Select a listing to edit it, or create a new one.</div>}
         </div>
@@ -60,9 +65,9 @@ function ListingList({ items, active, onSelect }) {
       {items.map((p) => {
         const img = p.images?.[0] ? media(p.images[0]) : null;
         return (
-          <li key={p.slug}>
+          <li key={p.slug} className="flex items-center gap-2 pr-4">
             <button onClick={() => onSelect(p.slug)} data-testid={`listing-row-${p.slug}`}
-              className={cn("flex w-full items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-soft", active === p.slug && "bg-sapphire/5")}>
+              className={cn("flex min-w-0 flex-1 items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-soft", active === p.slug && "bg-sapphire/5")}>
               <span className="h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-soft">
                 {img ? <img src={img.src} alt="" className="h-full w-full object-cover" loading="lazy" /> : <ImageOff className="m-auto mt-4 h-5 w-5 text-slateink" strokeWidth={1.75} />}
               </span>
@@ -75,8 +80,8 @@ function ListingList({ items, active, onSelect }) {
                   {p.featured && <span className="rounded-full bg-sapphire/10 px-2 py-0.5 text-[10px] font-semibold text-sapphire">Featured</span>}
                 </span>
               </span>
-              {p.published !== false && <a href={`/properties/${p.slug}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} aria-label="View on site" className="text-slateink hover:text-sapphire"><ExternalLink className="h-4 w-4" strokeWidth={1.75} /></a>}
             </button>
+            {p.published !== false && <a href={`/properties/${p.slug}`} target="_blank" rel="noopener noreferrer" aria-label={`View ${p.title} on site`} className="shrink-0 text-slateink hover:text-sapphire" data-testid={`listing-view-${p.slug}`}><ExternalLink className="h-4 w-4" strokeWidth={1.75} /></a>}
           </li>
         );
       })}

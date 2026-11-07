@@ -34,7 +34,10 @@ export function ListingEditor({ listing, onSaved, onCancel }) {
   const [errors, setErrors] = useState({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const set = (k) => (e) => setF((s) => ({ ...s, [k]: e?.target ? (e.target.type === "checkbox" ? e.target.checked : e.target.value) : e }));
+  const set = (k) => (e) => {
+    setErrors((s) => (s[k] ? { ...s, [k]: undefined } : s));
+    setF((s) => ({ ...s, [k]: e?.target ? (e.target.type === "checkbox" ? e.target.checked : e.target.value) : e }));
+  };
 
   const save = async (e) => {
     e.preventDefault();

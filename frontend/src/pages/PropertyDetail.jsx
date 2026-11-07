@@ -81,14 +81,14 @@ function Gallery({ images, title, sample }) {
         <img src={main.src} alt={main.alt} className="aspect-[4/3] w-full object-cover sm:aspect-[16/8]" data-testid="gallery-main-image" />
         {sample && <div className="absolute left-4 top-4 flex flex-wrap gap-2 pr-4"><SampleBadge /><SampleBadge label="Illustrative photos" /></div>}
       </div>
-      <div className="mt-3 flex gap-3 overflow-x-auto pb-1">
+      {images.length > 1 && <div className="mt-3 flex gap-3 overflow-x-auto pb-1">
         {images.map((k, i) => (
           <button key={typeof k === "string" ? k : k.path} onClick={() => setActive(i)} aria-label={`Show photo ${i + 1}`} aria-current={i === active} data-testid={`gallery-thumb-${i}`}
             className={cn("h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition-[border-color,opacity] sm:h-24 sm:w-36", i === active ? "border-sapphire" : "border-transparent opacity-70 hover:opacity-100")}>
             <img src={media(k).src} alt="" loading="lazy" className="h-full w-full object-cover" />
           </button>
         ))}
-      </div>
+      </div>}
     </section>
   );
 }
